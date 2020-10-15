@@ -1,0 +1,81 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Like {
+  id: ID!
+  createdAt: DateTime!
+  user: User!
+  post: Post!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Answer {
+  id: ID!
+  text: String!
+  createdAt: DateTime!
+  question: Question!
+}
+
+type Question {
+  id: ID!
+  text: String!
+  createdAt: DateTime!
+  user: User!
+  post: Post!
+  answer: Answer
+}
+
+type Post {
+  id: ID!
+  title: String!
+  description: String!
+  category: postCategory!
+  date: DateTime!
+  adress: String!
+  host: String!
+  NumOfRecruitment: Float!
+  recognizedHours: Float!
+  isOpened: Boolean!
+  isCompleted: Boolean!
+  createdAt: DateTime!
+  user: User!
+  applications: [Application!]
+  likes: [Like!]
+  questions: [Question!]
+}
+
+enum postCategory {
+  environment
+  eventSupport
+  communityService
+  ruralAtivity
+}
+
+type Application {
+  id: ID!
+  isAccepted: Boolean!
+  createdAt: DateTime!
+  user: User!
+  post: Post!
+}
+
+type User {
+  id: ID!
+  email: String!
+  password: String!
+  avatar: String
+  createdAt: DateTime!
+  posts: [Post!]
+  applications: [Application!]
+  likes: [Like!]
+  questions: [Question!]
+}
+
+type Query {
+  hi: String!
+}
