@@ -31,6 +31,9 @@ export class User extends CoreEntity {
   @Column({ nullable: true })
   avatar?: string;
 
+  @Field({ nullable: true })
+  isSelf?: boolean;
+
   @Field(() => [Post], { nullable: true })
   @OneToMany(
     () => Post,

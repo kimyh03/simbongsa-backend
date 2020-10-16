@@ -32,7 +32,7 @@
 
 - [x] signUp // 10월 16일
 - [x] signIn // 10월 16일
-- [ ] getProfile(+isSelf)
+- [x] getProfile(+isSelf) // 10월 16일
 - [ ] editAvatar
   
 ### Post

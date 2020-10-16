@@ -1,5 +1,7 @@
+import { NotFoundException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { GetProfileOutput } from './dto/GetProfile.dto';
 import { SignInInput, SignInOutput } from './dto/SignIn.dto';
 import { SignUpInput, SignUpOutput } from './dto/SignUp.dto';
 import { User } from './user.entity';
@@ -60,6 +62,30 @@ export class UserResolver {
       return {
         ok: false,
         error: error.message,
+      };
+    }
+  }
+
+  @Query(() => GetProfileOutput)
+  async getProfile(
+    @CurrentUser('currentUser') currentUser: User,
+    @Args('userId') userId: number,
+  ): Promise<GetProfileOutput> {
+    try {
+      const user = await this.userService.findOneById(userId);
+      if (!user) throw new NotFoundException();
+      const isSelf = currentUser.id === userId;
+      user.isSelf = isSelf;
+      return {
+        ok: true,
+        error: null,
+        user,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+        user: null,
       };
     }
   }

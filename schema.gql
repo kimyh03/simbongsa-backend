@@ -71,10 +71,17 @@ type User {
   username: String!
   password: String!
   avatar: String
+  isSelf: Boolean
   posts: [Post!]
   applications: [Application!]
   likes: [Like!]
   questions: [Question!]
+}
+
+type GetProfileOutput {
+  ok: Boolean!
+  error: String
+  user: User
 }
 
 type SignInOutput {
@@ -93,6 +100,7 @@ type Query {
   hi: String!
   getToken(userId: Float!): String!
   decodeToken(token: String!): String!
+  getProfile(userId: Float!): GetProfileOutput!
 }
 
 type Mutation {
