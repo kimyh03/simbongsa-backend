@@ -67,6 +67,7 @@ type Application {
 type User {
   id: ID!
   email: String!
+  username: String!
   password: String!
   avatar: String
   createdAt: DateTime!
@@ -76,8 +77,24 @@ type User {
   questions: [Question!]
 }
 
+type SignUpOutput {
+  ok: Boolean!
+  error: String
+  token: String
+}
+
 type Query {
   hi: String!
   getToken(userId: Float!): String!
   decodeToken(token: String!): String!
+}
+
+type Mutation {
+  signUp(data: SignUpInput!): SignUpOutput!
+}
+
+input SignUpInput {
+  email: String!
+  username: String!
+  password: String!
 }

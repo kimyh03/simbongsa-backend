@@ -25,6 +25,11 @@ export class User {
   @Column()
   email: string;
 
+  // 사용자 넥네임
+  @Field()
+  @Column()
+  username: string;
+
   // 비밀번호(로그인 PW)
   @Field()
   @Column()

@@ -30,9 +30,9 @@
 
 ### User
 
-- [ ] SignUp
-- [ ] SignIn
-- [ ] GetProfile(+isSelf)
+- [x] signUp // 10월 16일
+- [ ] signIn
+- [ ] getProfile(+isSelf)
 - [ ] editAvatar
   
 ### Post
