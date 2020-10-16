@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class commonOutput {
+export class CommonOutput {
   @Field(() => Boolean)
   ok: boolean;
 

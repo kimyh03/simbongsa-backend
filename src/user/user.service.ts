@@ -25,7 +25,7 @@ export class UserService {
     return this.authService.verify(token);
   }
 
-  async findOneById(userId: string) {
+  async findOneById(userId: number) {
     return this.userRepository.findOne(userId);
   }
 
