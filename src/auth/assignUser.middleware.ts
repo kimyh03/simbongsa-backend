@@ -18,8 +18,8 @@ export class AssignUserMiddleware implements NestMiddleware {
           const user = await this.userService.findOneById(payload['id']);
           req.user = user;
         }
-      } catch (erorr) {
-        console.log(erorr.message);
+      } catch (error) {
+        console.log(error.message);
       }
     }
     next();
