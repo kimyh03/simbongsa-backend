@@ -1,13 +1,16 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { SignUpInput, SignUpOutput } from './dto/SignUp.dto';
+import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
+
   @Query(() => String)
-  hi() {
-    return 'hi';
+  hi(@CurrentUser() currentUser: User) {
+    return `hi ${currentUser.username}`;
   }
 
   @Query(() => String)
