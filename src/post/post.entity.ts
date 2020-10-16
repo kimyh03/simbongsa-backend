@@ -1,16 +1,10 @@
-import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Application } from 'src/application/application.entity';
+import { CoreEntity } from 'src/common/entities/core.entity';
 import { Like } from 'src/like/like.entity';
 import { Question } from 'src/question/question.entity';
 import { User } from 'src/user/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 enum postCategory {
   environment,
@@ -25,11 +19,7 @@ registerEnumType(postCategory, { name: 'postCategory' });
 
 @ObjectType()
 @Entity('Post')
-export class Post {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Post extends CoreEntity {
   //모집 공고 제목
   @Field()
   @Column()
@@ -79,10 +69,6 @@ export class Post {
   @Field()
   @Column()
   isCompleted: boolean;
-
-  @Field()
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
 
   @Field(() => User)
   @ManyToOne(

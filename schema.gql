@@ -16,15 +16,15 @@ scalar DateTime
 
 type Answer {
   id: ID!
-  text: String!
   createdAt: DateTime!
+  text: String!
   question: Question!
 }
 
 type Question {
   id: ID!
-  text: String!
   createdAt: DateTime!
+  text: String!
   user: User!
   post: Post!
   answer: Answer
@@ -32,6 +32,7 @@ type Question {
 
 type Post {
   id: ID!
+  createdAt: DateTime!
   title: String!
   description: String!
   category: postCategory!
@@ -42,7 +43,6 @@ type Post {
   recognizedHours: Float!
   isOpened: Boolean!
   isCompleted: Boolean!
-  createdAt: DateTime!
   user: User!
   applications: [Application!]
   likes: [Like!]
@@ -58,19 +58,19 @@ enum postCategory {
 
 type Application {
   id: ID!
-  isAccepted: Boolean!
   createdAt: DateTime!
+  isAccepted: Boolean!
   user: User!
   post: Post!
 }
 
 type User {
   id: ID!
+  createdAt: DateTime!
   email: String!
   username: String!
   password: String!
   avatar: String
-  createdAt: DateTime!
   posts: [Post!]
   applications: [Application!]
   likes: [Like!]

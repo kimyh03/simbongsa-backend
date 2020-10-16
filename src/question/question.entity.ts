@@ -1,33 +1,19 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Answer } from 'src/answer/answer.entity';
+import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 
 // 봉사활동 모집 공고에 대한 질문
 
 @ObjectType()
 @Entity('Question')
-export class Question {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Question extends CoreEntity {
   // 질문 내용
   @Field()
   @Column()
   text: string;
-
-  @Field()
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
 
   @Field(() => User)
   @ManyToOne(

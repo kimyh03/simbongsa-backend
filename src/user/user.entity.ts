@@ -1,25 +1,16 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Application } from 'src/application/application.entity';
+import { CoreEntity } from 'src/common/entities/core.entity';
 import { Like } from 'src/like/like.entity';
 import { Post } from 'src/post/post.entity';
 import { Question } from 'src/question/question.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 // 사용자
 
 @ObjectType()
 @Entity('User')
-export class User {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends CoreEntity {
   // 이메일(로그인 ID)
   @Field()
   @Column()
@@ -39,10 +30,6 @@ export class User {
   @Field({ nullable: true })
   @Column({ nullable: true })
   avatar?: string;
-
-  @Field()
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
 
   @Field(() => [Post], { nullable: true })
   @OneToMany(
