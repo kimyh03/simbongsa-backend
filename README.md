@@ -31,7 +31,7 @@
 ### User
 
 - [x] signUp // 10월 16일
-- [ ] signIn
+- [x] signIn // 10월 16일
 - [ ] getProfile(+isSelf)
 - [ ] editAvatar
   

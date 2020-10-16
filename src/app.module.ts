@@ -29,6 +29,7 @@ import { AssignUserMiddleware } from './auth/assignUser.middleware';
         DATABASE_PASSWORD: Joi.string().required(),
         DATABASE_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
+        HASH_ROUNDS: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({

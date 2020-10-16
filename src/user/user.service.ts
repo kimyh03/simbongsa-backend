@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { SignInInput } from './dto/SignIn.dto';
 import { SignUpInput } from './dto/SignUp.dto';
 import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -12,6 +14,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getToken(userId: number) {
@@ -26,39 +29,54 @@ export class UserService {
     return this.userRepository.findOne(userId);
   }
 
-  async createUser(data: SignUpInput) {
+  async createUser({ username, email, password }: SignUpInput) {
     try {
       const existUser = await this.userRepository.findOne({
-        where: [{ email: data.email }, { username: data.username }],
+        where: [{ email }, { username }],
       });
       if (existUser) {
         return {
           error: '이미 등록된 정보 입니다.',
         };
       }
-      const newUser = this.userRepository.create(data);
+      const hashedPassword = await bcrypt.hash(
+        password,
+        +this.configService.get('HASH_ROUNDS'),
+      );
+      const newUser = this.userRepository.create({
+        username,
+        email,
+        password: hashedPassword,
+      });
       await this.userRepository.save(newUser);
       const token = this.authService.sign(newUser.id);
       return {
         error: null,
         token,
       };
-    } catch {
+    } catch (error) {
       return {
-        error: '유저를 생성 할 수 없습니다.',
+        error: error.message,
       };
     }
   }
 
   async verifyUser({ email, password }: SignInInput) {
-    const user = await this.userRepository.findOne({ email });
-    if (!user)
-      return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
-    if (user.password === password) {
-      const token = this.authService.sign(user.id);
-      return { token, error: null };
-    } else {
-      return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+    try {
+      const user = await this.userRepository.findOne({ email });
+      if (!user)
+        return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+      const compared = await bcrypt.compare(password, user.password);
+      if (compared) {
+        const token = this.authService.sign(user.id);
+        return { token, error: null };
+      } else {
+        return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+      }
+    } catch (error) {
+      return {
+        error: error.message,
+      };
     }
   }
 }
