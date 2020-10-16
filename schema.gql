@@ -78,4 +78,6 @@ type User {
 
 type Query {
   hi: String!
+  getToken(userId: Float!): String!
+  decodeToken(token: String!): String!
 }

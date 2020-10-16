@@ -9,17 +9,20 @@ import { Like } from './like/like.entity';
 import { Question } from './question/question.entity';
 import { Answer } from './answer/answer.entity';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       validationSchema: Joi.object({
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.string().required(),
         DATABASE_USERNAME: Joi.string().required(),
         DATABASE_PASSWORD: Joi.string().required(),
         DATABASE_NAME: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -37,6 +40,7 @@ import * as Joi from 'joi';
       autoSchemaFile: 'schema.gql',
     }),
     UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
