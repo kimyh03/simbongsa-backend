@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Repository } from 'typeorm';
+import { SignInInput } from './dto/SignIn.dto';
 import { SignUpInput } from './dto/SignUp.dto';
 import { User } from './user.entity';
 
@@ -46,6 +47,18 @@ export class UserService {
       return {
         error: '유저를 생성 할 수 없습니다.',
       };
+    }
+  }
+
+  async verifyUser({ email, password }: SignInInput) {
+    const user = await this.userRepository.findOne({ email });
+    if (!user)
+      return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+    if (user.password === password) {
+      const token = this.authService.sign(user.id);
+      return { token, error: null };
+    } else {
+      return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
     }
   }
 }

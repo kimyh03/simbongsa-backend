@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { SignInInput, SignInOutput } from './dto/SignIn.dto';
 import { SignUpInput, SignUpOutput } from './dto/SignUp.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -27,6 +28,26 @@ export class UserResolver {
   async signUp(@Args('data') data: SignUpInput): Promise<SignUpOutput> {
     try {
       const { error, token } = await this.userService.createUser(data);
+      if (error) {
+        throw Error(error);
+      } else {
+        return {
+          ok: true,
+          token,
+        };
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Mutation(() => SignInOutput)
+  async signIn(@Args('data') data: SignInInput): Promise<SignInOutput> {
+    try {
+      const { token, error } = await this.userService.verifyUser(data);
       if (error) {
         throw Error(error);
       } else {

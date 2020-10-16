@@ -77,6 +77,12 @@ type User {
   questions: [Question!]
 }
 
+type SignInOutput {
+  ok: Boolean!
+  error: String
+  token: String
+}
+
 type SignUpOutput {
   ok: Boolean!
   error: String
@@ -91,10 +97,16 @@ type Query {
 
 type Mutation {
   signUp(data: SignUpInput!): SignUpOutput!
+  signIn(data: SignInInput!): SignInOutput!
 }
 
 input SignUpInput {
   email: String!
   username: String!
+  password: String!
+}
+
+input SignInInput {
+  email: String!
   password: String!
 }
