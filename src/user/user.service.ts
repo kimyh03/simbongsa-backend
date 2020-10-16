@@ -18,7 +18,11 @@ export class UserService {
   }
 
   async decodeToken(token: string) {
-    return this.authService.decode(token);
+    return this.authService.verify(token);
+  }
+
+  async findOneById(userId: string) {
+    return this.userRepository.findOne(userId);
   }
 
   async createUser(data: SignUpInput) {

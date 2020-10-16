@@ -13,8 +13,8 @@ export class AuthService {
     return token;
   }
 
-  decode(token: string) {
-    const PayLoad = jwt.decode(token);
-    return PayLoad;
+  verify(token: string) {
+    const payLoad = jwt.verify(token, this.configService.get('JWT_SECRET'));
+    return payLoad;
   }
 }
