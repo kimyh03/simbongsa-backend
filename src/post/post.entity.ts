@@ -70,6 +70,14 @@ export class Post extends CoreEntity {
   @Column({ default: false })
   isCompleted: boolean;
 
+  // 본인이 작성한 모집공고 여부(client에서 사용, true시 모집공고 수정 및 삭제 버튼 등 추가 )
+  @Field({ nullable: true })
+  isMine: boolean;
+
+  // 좋아요&북마크 등록 여부(client에서 사용, Like여부에 따라 모집공고 상세화면에서 다른 아이콘 출력 ex)실선하트 or 색칠하트)
+  @Field({ nullable: true })
+  isLiked: boolean;
+
   @Field(() => User)
   @ManyToOne(
     () => User,

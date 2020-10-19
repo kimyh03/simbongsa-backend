@@ -43,6 +43,8 @@ type Post {
   recognizedHours: Float!
   isOpened: Boolean!
   isCompleted: Boolean!
+  isMine: Boolean
+  isLiked: Boolean
   user: User!
   userId: Float!
   applications: [Application!]
@@ -107,12 +109,19 @@ type EditPostOutput {
   error: String
 }
 
+type GetPostDetailOutput {
+  ok: Boolean!
+  error: String
+  post: Post
+}
+
 type Query {
   hi: String!
   getToken(userId: Float!): String!
   decodeToken(token: String!): String!
   getProfile(userId: Float!): GetProfileOutput!
   getPosts: [Post!]!
+  getPostDetail(postId: Float!): GetPostDetailOutput!
 }
 
 type Mutation {
