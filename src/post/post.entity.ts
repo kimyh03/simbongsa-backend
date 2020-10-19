@@ -5,15 +5,12 @@ import { Like } from 'src/like/like.entity';
 import { Question } from 'src/question/question.entity';
 import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
+import { postCategoryEnum } from './dto/postCategory.enum';
+import { postRigionEnum } from './dto/postRigion.enum';
 
-enum postCategory {
-  environment,
-  eventSupport,
-  communityService,
-  ruralAtivity,
-}
+registerEnumType(postCategoryEnum, { name: 'postCategory' });
 
-registerEnumType(postCategory, { name: 'postCategory' });
+registerEnumType(postRigionEnum, { name: 'postRigion' });
 
 // 봉사활동 모집 공고
 
@@ -31,14 +28,19 @@ export class Post extends CoreEntity {
   description: string;
 
   // 모집 공고 카테고리(환경보호 || 행사지원 || 생활지원 || 농어촌활동)
-  @Field(() => postCategory)
-  @Column({ type: 'enum', enum: postCategory })
-  category: postCategory;
+  @Field(() => postCategoryEnum)
+  @Column({ type: 'enum', enum: postCategoryEnum })
+  category: postCategoryEnum;
 
   // 활동 날짜
   @Field()
   @Column()
   date: Date;
+
+  // 활동 지역
+  @Field(() => postRigionEnum)
+  @Column({ type: 'enum', enum: postRigionEnum })
+  rigion: postRigionEnum;
 
   // 활동 장소
   @Field()

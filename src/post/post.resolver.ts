@@ -8,6 +8,7 @@ import { CreatePostInput } from './dto/CreatePost.dto';
 import { EditPostInput } from './dto/EditPost.dto';
 import { GetMyPostsOutput } from './dto/GetMyPosts.dto';
 import { GetPostDetailOutput } from './dto/GetPostDetail.dto';
+import { GetPostsInput, GetPostsOutput } from './dto/GetPosts.dto';
 import { Post } from './post.entity';
 import { PostService } from './post.service';
 
@@ -16,7 +17,7 @@ export class PostResolver {
   constructor(private readonly postService: PostService) {}
 
   @Query(() => [Post])
-  async getPosts() {
+  async getAllPosts() {
     return await this.postService.findAllPosts();
   }
 
@@ -148,6 +149,31 @@ export class PostResolver {
       return {
         ok: true,
         error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Query(() => GetPostsOutput)
+  async getPosts(@Args('data') data: GetPostsInput): Promise<GetPostsOutput> {
+    try {
+      const {
+        error,
+        posts,
+        totalCount,
+        totalPage,
+      } = await this.postService.findByFilter(data);
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+        posts,
+        totalCount,
+        totalPage,
       };
     } catch (error) {
       return {

@@ -8,6 +8,7 @@ export class CreatePostInput extends PickType(
     'title',
     'description',
     'category',
+    'rigion',
     'adress',
     'host',
     'NumOfRecruitment',

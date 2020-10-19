@@ -37,6 +37,7 @@ type Post {
   description: String!
   category: postCategory!
   date: DateTime!
+  rigion: postRigion!
   adress: String!
   host: String!
   NumOfRecruitment: Float!
@@ -57,6 +58,16 @@ enum postCategory {
   eventSupport
   communityService
   ruralAtivity
+}
+
+enum postRigion {
+  Seoul
+  Gyeonggi
+  Incheon
+  Chungcheong
+  Jeolla
+  Gyeongsang
+  Jeju
 }
 
 type Application {
@@ -116,14 +127,31 @@ type GetPostDetailOutput {
   post: Post
 }
 
+type GetPostsOutput {
+  ok: Boolean!
+  error: String
+  posts: [Post!]
+  totalCount: Float
+  totalPage: Float
+}
+
 type Query {
   hi: String!
   getToken(userId: Float!): String!
   decodeToken(token: String!): String!
   getProfile(userId: Float!): GetProfileOutput!
-  getPosts: [Post!]!
+  getAllPosts: [Post!]!
   getPostDetail(postId: Float!): GetPostDetailOutput!
   getMyPosts: GetMyPostsOutput!
+  getPosts(data: GetPostsInput!): GetPostsOutput!
+}
+
+input GetPostsInput {
+  categories: [postCategory!] = [communityService, environment, eventSupport, ruralAtivity]
+  rigions: [postRigion!] = [Seoul, Gyeonggi, Incheon, Chungcheong, Gyeongsang, Jeolla, Jeju]
+  page: Float!
+  openOnly: Boolean = true
+  searchTerm: String
 }
 
 type Mutation {
@@ -151,6 +179,7 @@ input CreatePostInput {
   description: String!
   category: postCategory!
   date: DateTime!
+  rigion: postRigion!
   adress: String!
   host: String!
   NumOfRecruitment: Float!
@@ -162,6 +191,7 @@ input EditPostInput {
   description: String
   category: postCategory
   date: DateTime
+  rigion: postRigion
   adress: String
   host: String
   NumOfRecruitment: Float

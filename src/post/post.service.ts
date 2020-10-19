@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CreatePostInput } from './dto/CreatePost.dto';
 import { EditPostInput } from './dto/EditPost.dto';
+import { GetPostsInput } from './dto/GetPosts.dto';
 import { Post } from './post.entity';
 
 @Injectable()
@@ -85,6 +86,76 @@ export class PostService {
       if (post.userId !== userId) throw new UnauthorizedException();
       await this.postRepository.remove(post);
       return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  }
+  async findByFilter({
+    categories,
+    rigions,
+    openOnly,
+    page = 1,
+    searchTerm,
+  }: GetPostsInput) {
+    try {
+      const OFFSET = (page - 1) * 10;
+      if (searchTerm) {
+        const posts = await this.postRepository
+          .createQueryBuilder('post')
+          .andWhere('post.isOpened =:openOnly', { openOnly })
+          .andWhere('post.category IN (:...categories)', { categories })
+          .andWhere('post.rigion IN (:...rigions)', { rigions })
+          .andWhere(
+            new Brackets(qb => {
+              qb.where('post.title LIKE :title', {
+                title: `%${searchTerm}%`,
+              }).orWhere('post.description like :description', {
+                description: `%${searchTerm}%`,
+              });
+            }),
+          )
+          .orderBy('post.id', 'DESC')
+          .take(10)
+          .offset(OFFSET)
+          .getMany();
+        const totalCount = await this.postRepository
+          .createQueryBuilder('post')
+          .andWhere('post.isOpened =:openOnly', { openOnly })
+          .andWhere('post.category IN (:...categories)', { categories })
+          .andWhere('post.rigion IN (:...rigions)', { rigions })
+          .andWhere(
+            new Brackets(qb => {
+              qb.where('post.title LIKE :title', {
+                title: `%${searchTerm}%`,
+              }).orWhere('post.description like :description', {
+                description: `%${searchTerm}%`,
+              });
+            }),
+          )
+          .orderBy('post.id', 'DESC')
+          .getCount();
+        const totalPage = Math.ceil(totalCount / 10);
+        return { error: null, posts, totalCount, totalPage };
+      } else {
+        const posts = await this.postRepository
+          .createQueryBuilder('post')
+          .andWhere('post.isOpened =:openOnly', { openOnly })
+          .andWhere('post.category IN (:...categories)', { categories })
+          .andWhere('post.rigion IN (:...rigions)', { rigions })
+          .orderBy('post.id', 'DESC')
+          .take(10)
+          .offset(OFFSET)
+          .getMany();
+        const totalCount = await this.postRepository
+          .createQueryBuilder('post')
+          .andWhere('post.isOpened =:openOnly', { openOnly })
+          .andWhere('post.category IN (:...categories)', { categories })
+          .andWhere('post.rigion IN (:...rigions)', { rigions })
+          .orderBy('post.id', 'DESC')
+          .getCount();
+        const totalPage = Math.ceil(totalCount / 10);
+        return { error: null, posts, totalCount, totalPage };
+      }
     } catch (error) {
       return { error };
     }
