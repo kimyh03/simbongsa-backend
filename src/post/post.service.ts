@@ -77,4 +77,16 @@ export class PostService {
       return { posts: null, error: error.message };
     }
   }
+
+  async delete(userId: number, postId: number) {
+    try {
+      const { error, post } = await this.findOneById(postId);
+      if (error) throw new Error(error);
+      if (post.userId !== userId) throw new UnauthorizedException();
+      await this.postRepository.remove(post);
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  }
 }

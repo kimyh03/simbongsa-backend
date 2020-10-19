@@ -132,6 +132,7 @@ type Mutation {
   createPost(data: CreatePostInput!): CommonOutput!
   editPost(postId: Float!, data: EditPostInput!): CommonOutput!
   toggleOpenAndClose(postId: Float!): CommonOutput!
+  deletePost(postId: Float!): CommonOutput!
 }
 
 input SignUpInput {

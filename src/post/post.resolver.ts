@@ -135,4 +135,25 @@ export class PostResolver {
       };
     }
   }
+
+  @UseGuards(LogInOnly)
+  @Mutation(() => CommonOutput)
+  async deletePost(
+    @CurrentUser('currentUser') currentUser: User,
+    @Args('postId') postId: number,
+  ): Promise<CommonOutput> {
+    try {
+      const { error } = await this.postService.delete(currentUser.id, postId);
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+      };
+    }
+  }
 }

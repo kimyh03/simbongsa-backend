@@ -45,6 +45,7 @@
 - [x] toggleOpenAndClose // 10월 19일
 - [ ] completePost
 - [x] getMyPosts // 10월 19일
+- [x] deletePost // 10월 19일
 
 ### Application
 
