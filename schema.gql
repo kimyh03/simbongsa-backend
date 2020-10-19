@@ -104,6 +104,12 @@ type SignUpOutput {
   token: String
 }
 
+type GetMyPostsOutput {
+  ok: Boolean!
+  error: String
+  posts: [Post!]
+}
+
 type GetPostDetailOutput {
   ok: Boolean!
   error: String
@@ -117,6 +123,7 @@ type Query {
   getProfile(userId: Float!): GetProfileOutput!
   getPosts: [Post!]!
   getPostDetail(postId: Float!): GetPostDetailOutput!
+  getMyPosts: GetMyPostsOutput!
 }
 
 type Mutation {

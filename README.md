@@ -42,9 +42,9 @@
 - [x] getPostDetail(+isMine, isLiked) // 10월 19일
 - [x] createPost // 10월 19일
 - [x] editPost // 10월 19일
-- [x] toggleOpenAndClose
+- [x] toggleOpenAndClose // 10월 19일
 - [ ] completePost
-- [ ] getMyPosts
+- [x] getMyPosts // 10월 19일
 
 ### Application
 

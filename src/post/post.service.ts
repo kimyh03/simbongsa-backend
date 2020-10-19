@@ -68,4 +68,13 @@ export class PostService {
       return { error: error.message };
     }
   }
+
+  async findAllByUserId(userId: number) {
+    try {
+      const posts = await this.postRepository.find({ where: { userId } });
+      return { posts, error: null };
+    } catch (error) {
+      return { posts: null, error: error.message };
+    }
+  }
 }

@@ -6,6 +6,7 @@ import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
 import { CreatePostInput } from './dto/CreatePost.dto';
 import { EditPostInput } from './dto/EditPost.dto';
+import { GetMyPostsOutput } from './dto/GetMyPosts.dto';
 import { GetPostDetailOutput } from './dto/GetPostDetail.dto';
 import { Post } from './post.entity';
 import { PostService } from './post.service';
@@ -108,6 +109,30 @@ export class PostResolver {
       return { ok: true, error: null };
     } catch (error) {
       return { ok: false, error: error.message };
+    }
+  }
+
+  @UseGuards(LogInOnly)
+  @Query(() => GetMyPostsOutput)
+  async getMyPosts(
+    @CurrentUser('currentUser') currentUser: User,
+  ): Promise<GetMyPostsOutput> {
+    try {
+      const { posts, error } = await this.postService.findAllByUserId(
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+        posts,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+        posts: null,
+      };
     }
   }
 }
