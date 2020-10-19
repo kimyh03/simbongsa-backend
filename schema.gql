@@ -44,6 +44,7 @@ type Post {
   isOpened: Boolean!
   isCompleted: Boolean!
   user: User!
+  userId: Float!
   applications: [Application!]
   likes: [Like!]
   questions: [Question!]
@@ -101,6 +102,11 @@ type CreatePostOutput {
   error: String
 }
 
+type EditPostOutput {
+  ok: Boolean!
+  error: String
+}
+
 type Query {
   hi: String!
   getToken(userId: Float!): String!
@@ -113,6 +119,7 @@ type Mutation {
   signUp(data: SignUpInput!): SignUpOutput!
   signIn(data: SignInInput!): SignInOutput!
   createPost(data: CreatePostInput!): CreatePostOutput!
+  editPost(postId: Float!, data: EditPostInput!): EditPostOutput!
 }
 
 input SignUpInput {
@@ -135,4 +142,15 @@ input CreatePostInput {
   host: String!
   NumOfRecruitment: Float!
   recognizedHours: Float!
+}
+
+input EditPostInput {
+  title: String
+  description: String
+  category: postCategory
+  date: DateTime
+  adress: String
+  host: String
+  NumOfRecruitment: Float
+  recognizedHours: Float
 }

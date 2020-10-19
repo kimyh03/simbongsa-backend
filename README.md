@@ -41,7 +41,7 @@
 - [ ] searchPost
 - [ ] getPostDetail(+isMine, isLiked)
 - [x] createPost // 10월 19일
-- [ ] editPost
+- [x] editPost // 10월 19일
 - [ ] toggleOpenAndClose
 - [ ] completePost
 - [ ] getMyPosts

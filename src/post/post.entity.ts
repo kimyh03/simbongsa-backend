@@ -4,7 +4,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Like } from 'src/like/like.entity';
 import { Question } from 'src/question/question.entity';
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
 enum postCategory {
   environment,
@@ -77,6 +77,11 @@ export class Post extends CoreEntity {
     { onDelete: 'CASCADE' },
   )
   user: User;
+
+  @Field()
+  @RelationId((post: Post) => post.user)
+  @Column()
+  userId: number;
 
   @Field(() => [Application], { nullable: true })
   @OneToMany(
