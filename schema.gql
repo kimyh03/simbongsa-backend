@@ -81,6 +81,11 @@ type User {
   questions: [Question!]
 }
 
+type CommonOutput {
+  ok: Boolean!
+  error: String
+}
+
 type GetProfileOutput {
   ok: Boolean!
   error: String
@@ -97,16 +102,6 @@ type SignUpOutput {
   ok: Boolean!
   error: String
   token: String
-}
-
-type CreatePostOutput {
-  ok: Boolean!
-  error: String
-}
-
-type EditPostOutput {
-  ok: Boolean!
-  error: String
 }
 
 type GetPostDetailOutput {
@@ -127,8 +122,9 @@ type Query {
 type Mutation {
   signUp(data: SignUpInput!): SignUpOutput!
   signIn(data: SignInInput!): SignInOutput!
-  createPost(data: CreatePostInput!): CreatePostOutput!
-  editPost(postId: Float!, data: EditPostInput!): EditPostOutput!
+  createPost(data: CreatePostInput!): CommonOutput!
+  editPost(postId: Float!, data: EditPostInput!): CommonOutput!
+  toggleOpenAndClose(postId: Float!): CommonOutput!
 }
 
 input SignUpInput {

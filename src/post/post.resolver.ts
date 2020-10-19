@@ -2,9 +2,10 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
-import { CreatePostInput, CreatePostOutput } from './dto/CreatePost.dto';
-import { EditPostInput, EditPostOutput } from './dto/EditPost.dto';
+import { CreatePostInput } from './dto/CreatePost.dto';
+import { EditPostInput } from './dto/EditPost.dto';
 import { GetPostDetailOutput } from './dto/GetPostDetail.dto';
 import { Post } from './post.entity';
 import { PostService } from './post.service';
@@ -19,11 +20,11 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CreatePostOutput)
+  @Mutation(() => CommonOutput)
   async createPost(
     @CurrentUser('currentUser') currentUser: User,
     @Args('data') data: CreatePostInput,
-  ): Promise<CreatePostOutput> {
+  ): Promise<CommonOutput> {
     try {
       const { error } = await this.postService.createPost(currentUser.id, data);
       if (error) {
@@ -37,12 +38,12 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => EditPostOutput)
+  @Mutation(() => CommonOutput)
   async editPost(
     @CurrentUser('currentUser') currentUser: User,
     @Args('data') data: EditPostInput,
     @Args('postId') postId: number,
-  ): Promise<EditPostOutput> {
+  ): Promise<CommonOutput> {
     try {
       const { error } = await this.postService.editPost(
         currentUser.id,
@@ -89,6 +90,24 @@ export class PostResolver {
       return { ok: true, error: null, post };
     } catch (error) {
       return { ok: false, error: error.message, post: null };
+    }
+  }
+
+  @UseGuards(LogInOnly)
+  @Mutation(() => CommonOutput)
+  async toggleOpenAndClose(
+    @CurrentUser('currentUser') currentUser: User,
+    @Args('postId') postId: number,
+  ): Promise<CommonOutput> {
+    try {
+      const { error } = await this.postService.toggleOpenAndClose(
+        currentUser.id,
+        postId,
+      );
+      if (error) throw new Error(error);
+      return { ok: true, error: null };
+    } catch (error) {
+      return { ok: false, error: error.message };
     }
   }
 }

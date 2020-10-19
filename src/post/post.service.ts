@@ -55,4 +55,17 @@ export class PostService {
       return { error: error.message };
     }
   }
+
+  async toggleOpenAndClose(userId: number, postId: number) {
+    try {
+      const { error, post } = await this.findOneById(postId);
+      if (error) throw new Error(error);
+      if (post.userId !== userId) throw new UnauthorizedException();
+      post.isOpened = !post.isOpened;
+      await this.postRepository.save(post);
+      return { error: null };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
 }

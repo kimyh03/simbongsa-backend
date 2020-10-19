@@ -1,5 +1,4 @@
-import { InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { CommonOutput } from 'src/common/dto/CommonOutput';
+import { InputType, PickType } from '@nestjs/graphql';
 import { Post } from '../post.entity';
 
 @InputType()
@@ -17,6 +16,3 @@ export class CreatePostInput extends PickType(
   ],
   InputType,
 ) {}
-
-@ObjectType()
-export class CreatePostOutput extends CommonOutput {}
