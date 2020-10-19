@@ -1,4 +1,4 @@
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
@@ -62,8 +62,8 @@ export class PostResolver {
     @Args('postId') postId: number,
   ): Promise<GetPostDetailOutput> {
     try {
-      const post = await this.postService.findOneById(postId);
-      if (!post) throw new NotFoundException();
+      const { error, post } = await this.postService.findOneById(postId);
+      if (error) throw new Error(error);
       if (currentUser) {
         if (post.userId === currentUser.id) {
           post.isMine = true;

@@ -23,7 +23,13 @@ export class PostService {
   }
 
   async findOneById(id: number) {
-    return await this.postRepository.findOne(id);
+    try {
+      const post = await this.postRepository.findOne(id);
+      if (!post) throw new NotFoundException();
+      return { error: null, post };
+    } catch (error) {
+      return { error: error.message, post: null };
+    }
   }
 
   async createPost(userId: number, data: CreatePostInput) {
@@ -39,8 +45,8 @@ export class PostService {
 
   async editPost(userId: number, postId: number, data: EditPostInput) {
     try {
-      const post = await this.findOneById(postId);
-      if (!post) throw new NotFoundException();
+      const { error, post } = await this.findOneById(postId);
+      if (error) throw new Error(error);
       if (post.userId !== userId) throw new UnauthorizedException();
       Object.assign(post, data);
       await this.postRepository.save(post);
