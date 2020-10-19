@@ -17,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { AssignUserMiddleware } from './auth/assignUser.middleware';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { AssignUserMiddleware } from './auth/assignUser.middleware';
     }),
     UserModule,
     AuthModule,
+    PostModule,
   ],
 })
 export class AppModule implements NestModule {

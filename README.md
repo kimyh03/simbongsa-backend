@@ -40,7 +40,7 @@
 - [ ] getPosts(filter, cursor based pagination)
 - [ ] searchPost
 - [ ] getPostDetail(+isMine, isLiked)
-- [ ] createPost
+- [x] createPost // 10월 19일
 - [ ] editPost
 - [ ] toggleOpenAndClose
 - [ ] completePost

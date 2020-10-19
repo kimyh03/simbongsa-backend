@@ -62,12 +62,12 @@ export class Post extends CoreEntity {
 
   // 인원 모집 여부(false시 참가 신청 불가)
   @Field()
-  @Column()
+  @Column({ default: true })
   isOpened: boolean;
 
   // 활동 종료 여부(true시 참가자의 봉사활동 이력 및 봉사시간에 추가, 모집공고 삭제 불가, 참가신청 불가)
   @Field()
-  @Column()
+  @Column({ default: false })
   isCompleted: boolean;
 
   @Field(() => User)
