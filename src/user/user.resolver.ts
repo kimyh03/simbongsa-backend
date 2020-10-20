@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { GetProfileOutput } from './dto/GetProfile.dto';
@@ -72,8 +71,8 @@ export class UserResolver {
     @Args('userId') userId: number,
   ): Promise<GetProfileOutput> {
     try {
-      const user = await this.userService.findOneById(userId);
-      if (!user) throw new NotFoundException();
+      const { user, error } = await this.userService.findOneById(userId);
+      if (error) throw new Error(error);
       const isSelf = currentUser.id === userId;
       user.isSelf = isSelf;
       return {

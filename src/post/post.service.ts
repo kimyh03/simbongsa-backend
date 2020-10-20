@@ -35,7 +35,8 @@ export class PostService {
 
   async createPost(userId: number, data: CreatePostInput) {
     try {
-      const user = await this.userService.findOneById(userId);
+      const { user, error } = await this.userService.findOneById(userId);
+      if (error) throw new Error(error);
       const newPost = this.postRepository.create({ user, ...data });
       await this.postRepository.save(newPost);
       return { error: null };
