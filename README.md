@@ -48,7 +48,7 @@
 
 ### Application
 
-- [ ] applyForPost
+- [x] applyForPost // 10월 20일
 - [ ] acceptApplication
 - [ ] cancelApplication
 - [ ] getMyApplications
