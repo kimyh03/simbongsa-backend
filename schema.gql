@@ -28,6 +28,7 @@ type Question {
   createdAt: DateTime!
   text: String!
   user: User!
+  userId: Float!
   post: Post!
   answer: Answer
 }
@@ -172,6 +173,7 @@ type Mutation {
   cancelApplication(applicationId: Float!): CommonOutput!
   toggleLike(postId: Float!): CommonOutput!
   createQuestion(text: String!, postId: Float!): CommonOutput!
+  deleteQuestion(questionId: Float!): CommonOutput!
 }
 
 input SignUpInput {

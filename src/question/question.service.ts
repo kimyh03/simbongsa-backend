@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostService } from 'src/post/post.service';
 import { UserService } from 'src/user/user.service';
@@ -26,6 +30,18 @@ export class QuestionService {
       if (uError) throw new Error(uError);
       const newQuestion = this.questionRepository.create({ post, user, text });
       await this.questionRepository.save(newQuestion);
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  }
+
+  async delete(questionId: number, userId: number) {
+    try {
+      const existQuestion = await this.questionRepository.findOne(questionId);
+      if (!existQuestion) throw new NotFoundException();
+      if (existQuestion.userId !== userId) throw new UnauthorizedException();
+      this.questionRepository.remove(existQuestion);
       return { error: null };
     } catch (error) {
       return { error };

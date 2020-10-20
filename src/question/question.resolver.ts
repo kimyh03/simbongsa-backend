@@ -35,4 +35,28 @@ export class QuestionResolver {
       };
     }
   }
+
+  @UseGuards(LogInOnly)
+  @Mutation(() => CommonOutput)
+  async deleteQuestion(
+    @CurrentUser() currentUser: User,
+    @Args('questionId') questionId: number,
+  ) {
+    const { error } = await this.questionService.delete(
+      questionId,
+      currentUser.id,
+    );
+    if (error) throw new Error(error);
+    try {
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+      };
+    }
+  }
 }

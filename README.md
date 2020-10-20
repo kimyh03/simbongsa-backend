@@ -61,7 +61,7 @@
 ### Question
 
 - [x] createQuestion // 10월 20일
-- [ ] deleteQuestion
+- [x] deleteQuestion // 10월 20일
 
 ### Answer
 
