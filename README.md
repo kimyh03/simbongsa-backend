@@ -49,7 +49,7 @@
 ### Application
 
 - [x] applyForPost // 10월 20일
-- [ ] acceptApplication
+- [x] toggleAccept // 10월 20일
 - [ ] cancelApplication
 - [ ] getMyApplications
 

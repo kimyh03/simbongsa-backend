@@ -76,6 +76,7 @@ type Application {
   isAccepted: Boolean!
   user: User!
   post: Post!
+  postId: Float!
 }
 
 type User {
@@ -163,6 +164,7 @@ type Mutation {
   toggleOpenAndClose(postId: Float!): CommonOutput!
   deletePost(postId: Float!): CommonOutput!
   applyForPost(postId: Float!): CommonOutput!
+  toggleAccept(applicationId: Float!): CommonOutput!
 }
 
 input SignUpInput {

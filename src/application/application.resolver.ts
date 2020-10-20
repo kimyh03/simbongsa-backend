@@ -36,4 +36,27 @@ export class ApplicationResolver {
       };
     }
   }
+
+  @Mutation(() => CommonOutput)
+  async toggleAccept(
+    @CurrentUser() currentUser: User,
+    @Args('applicationId') applicationId: number,
+  ): Promise<CommonOutput> {
+    try {
+      const { error } = await this.applicationService.toggleIsAccepted(
+        applicationId,
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
 }

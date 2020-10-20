@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostService } from 'src/post/post.service';
 import { UserService } from 'src/user/user.service';
@@ -41,5 +45,22 @@ export class ApplicationService {
     }
   }
 
-  async;
+  async toggleIsAccepted(applicationId: number, userId: number) {
+    try {
+      const application = await this.applicationRepository.findOne(
+        applicationId,
+      );
+      if (!application) throw new NotFoundException();
+      const { post, error } = await this.postService.findOneById(
+        application.postId,
+      );
+      if (error) throw new Error(error);
+      if (post.userId !== userId) throw new UnauthorizedException();
+      application.isAccepted = !application.isAccepted;
+      await this.applicationRepository.save(application);
+      return { error: null };
+    } catch (error) {
+      return { error };
+    }
+  }
 }
