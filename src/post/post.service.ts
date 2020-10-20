@@ -20,7 +20,7 @@ export class PostService {
   ) {}
 
   async findAllPosts() {
-    return await this.postRepository.find();
+    return await this.postRepository.find({ relations: ['likes'] });
   }
 
   async findOneById(id: number) {

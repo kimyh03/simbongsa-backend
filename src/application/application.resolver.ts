@@ -1,5 +1,7 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
 import { Application } from './application.entity';
@@ -14,6 +16,7 @@ export class ApplicationResolver {
     return await this.applicationService.findAll();
   }
 
+  @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)
   async applyForPost(
     @CurrentUser('currentUser') currentUser: User,
@@ -37,6 +40,7 @@ export class ApplicationResolver {
     }
   }
 
+  @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)
   async toggleAccept(
     @CurrentUser() currentUser: User,
@@ -60,6 +64,7 @@ export class ApplicationResolver {
     }
   }
 
+  @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)
   async cancelApplication(
     @CurrentUser() currentUser: User,

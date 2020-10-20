@@ -183,6 +183,7 @@ export class PostResolver {
     }
   }
 
+  @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)
   async completePost(
     @CurrentUser() currentUser: User,

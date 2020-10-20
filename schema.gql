@@ -6,7 +6,9 @@ type Like {
   id: ID!
   createdAt: DateTime!
   user: User!
+  userId: Float!
   post: Post!
+  postId: Float!
 }
 
 """
@@ -168,6 +170,7 @@ type Mutation {
   applyForPost(postId: Float!): CommonOutput!
   toggleAccept(applicationId: Float!): CommonOutput!
   cancelApplication(applicationId: Float!): CommonOutput!
+  toggleLike(postId: Float!): CommonOutput!
 }
 
 input SignUpInput {

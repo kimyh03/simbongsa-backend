@@ -42,7 +42,7 @@
 - [x] createPost // 10월 19일
 - [x] editPost // 10월 19일
 - [x] toggleOpenAndClose // 10월 19일
-- [ ] completePost
+- [x] completePost // 10월 20일
 - [x] getMyPosts // 10월 19일
 - [x] deletePost // 10월 19일
 
@@ -55,7 +55,7 @@
 
 ### Like
 
-- [ ] toggleLike
+- [x] toggleLike // 10월 20일
 - [ ] getMyLikes
 
 ### Question
