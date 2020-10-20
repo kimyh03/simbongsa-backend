@@ -50,7 +50,7 @@
 
 - [x] applyForPost // 10월 20일
 - [x] toggleAccept // 10월 20일
-- [ ] cancelApplication
+- [x] cancelApplication  // 10월 20일
 - [ ] getMyApplications
 
 ### Like

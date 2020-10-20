@@ -59,4 +59,27 @@ export class ApplicationResolver {
       };
     }
   }
+
+  @Mutation(() => CommonOutput)
+  async cancelApplication(
+    @CurrentUser() currentUser: User,
+    @Args('applicationId') applicationId: number,
+  ): Promise<CommonOutput> {
+    try {
+      const { error } = await this.applicationService.delete(
+        applicationId,
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
 }

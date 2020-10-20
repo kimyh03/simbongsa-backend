@@ -63,4 +63,25 @@ export class ApplicationService {
       return { error };
     }
   }
+
+  async delete(applicationId: number, userId: number) {
+    try {
+      const application = await this.applicationRepository.findOne(
+        applicationId,
+      );
+      if (!application) throw new NotFoundException();
+      const { post, error } = await this.postService.findOneById(
+        application.postId,
+      );
+      if (error) throw new Error(error);
+      if (post.userId === userId || application.id === userId) {
+        await this.applicationRepository.remove(application);
+        return { error: null };
+      } else {
+        throw new UnauthorizedException();
+      }
+    } catch (error) {
+      return { error };
+    }
+  }
 }

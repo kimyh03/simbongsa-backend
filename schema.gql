@@ -165,6 +165,7 @@ type Mutation {
   deletePost(postId: Float!): CommonOutput!
   applyForPost(postId: Float!): CommonOutput!
   toggleAccept(applicationId: Float!): CommonOutput!
+  cancelApplication(applicationId: Float!): CommonOutput!
 }
 
 input SignUpInput {
