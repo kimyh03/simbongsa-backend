@@ -1,14 +1,20 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
+import { Question } from './question.entity';
 import { QuestionService } from './question.service';
 
 @Resolver()
 export class QuestionResolver {
   constructor(private readonly questionService: QuestionService) {}
+
+  @Query(() => [Question])
+  async getAllQuestions() {
+    return await this.questionService.findAll();
+  }
 
   @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)

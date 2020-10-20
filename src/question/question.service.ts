@@ -18,6 +18,10 @@ export class QuestionService {
     private readonly postService: PostService,
   ) {}
 
+  async findAll() {
+    return await this.questionRepository.find({ relations: ['answer'] });
+  }
+
   async create(text: string, postId: number, userId: number) {
     try {
       const { post, error: pError } = await this.postService.findOneById(
@@ -45,6 +49,20 @@ export class QuestionService {
       return { error: null };
     } catch (error) {
       return { error };
+    }
+  }
+
+  async findOneById(questionId: number) {
+    try {
+      const question = await this.questionRepository.findOne({
+        where: { id: questionId },
+        relations: ['post'],
+      });
+      if (!question) throw new NotFoundException();
+      const hostId = question.post.userId;
+      return { question, error: null, hostId };
+    } catch (error) {
+      return { question: null, error, hostId: null };
     }
   }
 }

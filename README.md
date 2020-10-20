@@ -65,4 +65,4 @@
 
 ### Answer
 
-- [ ] createAnswer
+- [x] createAnswer // 10월 20일

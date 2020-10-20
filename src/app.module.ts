@@ -21,6 +21,7 @@ import { PostModule } from './post/post.module';
 import { ApplicationModule } from './application/application.module';
 import { LikeModule } from './like/like.module';
 import { QuestionModule } from './question/question.module';
+import { AnswerModule } from './answer/answer.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { QuestionModule } from './question/question.module';
     ApplicationModule,
     LikeModule,
     QuestionModule,
+    AnswerModule,
   ],
 })
 export class AppModule implements NestModule {

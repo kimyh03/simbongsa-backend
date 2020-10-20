@@ -30,6 +30,7 @@ type Question {
   user: User!
   userId: Float!
   post: Post!
+  postId: Float!
   answer: Answer
 }
 
@@ -150,6 +151,7 @@ type Query {
   getMyPosts: GetMyPostsOutput!
   getPosts(data: GetPostsInput!): GetPostsOutput!
   getAllApplications: [Application!]!
+  getAllQuestions: [Question!]!
 }
 
 input GetPostsInput {
@@ -174,6 +176,7 @@ type Mutation {
   toggleLike(postId: Float!): CommonOutput!
   createQuestion(text: String!, postId: Float!): CommonOutput!
   deleteQuestion(questionId: Float!): CommonOutput!
+  answerTheQuestion(text: String!, questionId: Float!): CommonOutput!
 }
 
 input SignUpInput {
