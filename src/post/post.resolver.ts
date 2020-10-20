@@ -182,4 +182,27 @@ export class PostResolver {
       };
     }
   }
+
+  @Mutation(() => CommonOutput)
+  async completePost(
+    @CurrentUser() currentUser: User,
+    @Args('postId') postId: number,
+  ): Promise<CommonOutput> {
+    try {
+      const { error } = await this.postService.setIsCompleteTrue(
+        postId,
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
 }

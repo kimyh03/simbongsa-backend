@@ -26,6 +26,10 @@ export class ApplicationService {
 
   async create(userId: number, postId: number) {
     try {
+      const isExist = await this.applicationRepository.findOne({
+        where: { userId, postId },
+      });
+      if (isExist) throw new Error('이미 신청하셨습니다.');
       const { user, error: uError } = await this.userService.findOneById(
         userId,
       );
@@ -34,6 +38,8 @@ export class ApplicationService {
       );
       if (uError) throw new Error(uError);
       if (pError) throw new Error(pError);
+      if (post.isCompleted === true || post.isOpened === false)
+        throw new Error('모집이 마감 되었습니다.');
       const newApplication = this.applicationRepository.create({
         user,
         post,

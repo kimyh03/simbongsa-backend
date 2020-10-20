@@ -82,13 +82,18 @@ export class PostService {
 
   async delete(userId: number, postId: number) {
     try {
-      const { error, post } = await this.findOneById(postId);
-      if (error) throw new Error(error);
+      const post = await this.postRepository.findOne(postId);
+      if (!post) throw new NotFoundException();
       if (post.userId !== userId) throw new UnauthorizedException();
+      if (post.isCompleted === true) {
+        throw new Error(
+          '활동이 성공적으로 종료된 모집공고는 삭제할 수 없습니다.',
+        );
+      }
       await this.postRepository.remove(post);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
   async findByFilter({
@@ -157,6 +162,19 @@ export class PostService {
         const totalPage = Math.ceil(totalCount / 10);
         return { error: null, posts, totalCount, totalPage };
       }
+    } catch (error) {
+      return { error };
+    }
+  }
+
+  async setIsCompleteTrue(postId: number, userId: number) {
+    try {
+      const post = await this.postRepository.findOne(postId);
+      if (!post) throw new NotFoundException();
+      if (post.userId !== userId) throw new UnauthorizedException();
+      post.isCompleted = true;
+      await this.postRepository.save(post);
+      return { error: null };
     } catch (error) {
       return { error };
     }

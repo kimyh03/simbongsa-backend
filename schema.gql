@@ -75,6 +75,7 @@ type Application {
   createdAt: DateTime!
   isAccepted: Boolean!
   user: User!
+  userId: Float!
   post: Post!
   postId: Float!
 }
@@ -163,6 +164,7 @@ type Mutation {
   editPost(postId: Float!, data: EditPostInput!): CommonOutput!
   toggleOpenAndClose(postId: Float!): CommonOutput!
   deletePost(postId: Float!): CommonOutput!
+  completePost(postId: Float!): CommonOutput!
   applyForPost(postId: Float!): CommonOutput!
   toggleAccept(applicationId: Float!): CommonOutput!
   cancelApplication(applicationId: Float!): CommonOutput!

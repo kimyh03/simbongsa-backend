@@ -23,6 +23,11 @@ export class Application extends CoreEntity {
   user: User;
 
   @Field()
+  @RelationId((application: Application) => application.user)
+  @Column()
+  userId: number;
+
+  @Field()
   @ManyToOne(
     () => Post,
     post => post.applications,
