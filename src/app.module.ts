@@ -20,6 +20,7 @@ import { AssignUserMiddleware } from './auth/assignUser.middleware';
 import { PostModule } from './post/post.module';
 import { ApplicationModule } from './application/application.module';
 import { LikeModule } from './like/like.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { LikeModule } from './like/like.module';
     PostModule,
     ApplicationModule,
     LikeModule,
+    QuestionModule,
   ],
 })
 export class AppModule implements NestModule {

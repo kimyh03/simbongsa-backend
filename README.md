@@ -60,7 +60,7 @@
 
 ### Question
 
-- [ ] createQuestion
+- [x] createQuestion // 10월 20일
 - [ ] deleteQuestion
 
 ### Answer

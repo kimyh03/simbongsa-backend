@@ -171,6 +171,7 @@ type Mutation {
   toggleAccept(applicationId: Float!): CommonOutput!
   cancelApplication(applicationId: Float!): CommonOutput!
   toggleLike(postId: Float!): CommonOutput!
+  createQuestion(text: String!, postId: Float!): CommonOutput!
 }
 
 input SignUpInput {
