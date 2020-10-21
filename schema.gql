@@ -155,6 +155,12 @@ type GetPostsOutput {
   totalPage: Float
 }
 
+type GetMyCertificatesOutput {
+  ok: Boolean!
+  error: String
+  certificates: [Certificate!]
+}
+
 type Query {
   hi: String!
   getToken(userId: Float!): String!
@@ -167,6 +173,8 @@ type Query {
   getAllApplications: [Application!]!
   getAllQuestions: [Question!]!
   getAllAnswer: [Answer!]!
+  getAllCertificate: [Certificate!]!
+  getMyCertificates: GetMyCertificatesOutput!
 }
 
 input GetPostsInput {

@@ -70,5 +70,4 @@
 
 ### Certificate
 
-- [ ] issueCertificate
-- [ ] getMyCertificates
+- [x] getMyCertificates // 10월 21일

@@ -47,4 +47,15 @@ export class CertificateService {
       };
     }
   }
+
+  async findAllByUserId(userId: number) {
+    try {
+      const certificates = await this.certificateRepository.find({
+        where: { userId },
+      });
+      return { certificates, error: null };
+    } catch (error) {
+      return { error, certificates: null };
+    }
+  }
 }
