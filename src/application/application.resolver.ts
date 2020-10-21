@@ -13,6 +13,7 @@ import { User } from 'src/user/user.entity';
 import { Application } from './application.entity';
 import { ApplicationService } from './application.service';
 import { applicationStatus } from './dto/ApplicationStatus.enum';
+import { GetMyApplicationsOutput } from './dto/GetMyApplications.dto';
 
 registerEnumType(applicationStatus, { name: 'applicationStatus' });
 
@@ -93,6 +94,31 @@ export class ApplicationResolver {
       };
     } catch (error) {
       return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  @UseGuards(LogInOnly)
+  @Query(() => GetMyApplicationsOutput)
+  async getMyApplications(
+    @CurrentUser() currentUser: User,
+  ): Promise<GetMyApplicationsOutput> {
+    try {
+      const {
+        applications,
+        error,
+      } = await this.applicationService.findAllByUserId(currentUser.id);
+      if (error) throw new Error(error);
+      return {
+        applications,
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        applications: null,
         ok: false,
         error,
       };

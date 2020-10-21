@@ -123,4 +123,17 @@ export class ApplicationService {
       return { error };
     }
   }
+
+  async findAllByUserId(userId: number) {
+    try {
+      const applications = await this.applicationRepository.find({
+        where: { userId },
+        relations: ['post'],
+      });
+      if (!applications) throw new NotFoundException();
+      return { applications, error: null };
+    } catch (error) {
+      return { applications: null, error };
+    }
+  }
 }

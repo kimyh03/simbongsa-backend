@@ -155,6 +155,12 @@ type GetPostsOutput {
   totalPage: Float
 }
 
+type GetMyApplicationsOutput {
+  ok: Boolean!
+  error: String
+  applications: [Application!]
+}
+
 type GetLikesOutput {
   ok: Boolean!
   error: String
@@ -177,6 +183,7 @@ type Query {
   getMyPosts: GetMyPostsOutput!
   getPosts(data: GetPostsInput!): GetPostsOutput!
   getAllApplications: [Application!]!
+  getMyApplications: GetMyApplicationsOutput!
   getMyLikes: GetLikesOutput!
   getAllQuestions: [Question!]!
   getAllAnswer: [Answer!]!

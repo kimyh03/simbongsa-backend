@@ -46,13 +46,13 @@
 - [x] completePost // 10월 20일
 - [x] deletePost // 10월 19일
 - [x] getMyPosts // 10월 19일
-- [ ] getAppliedPosts
 
 ### Application
 
 - [x] applyForPost // 10월 20일
 - [x] handleApplication // 10월 21일
 - [x] cancelApplication  // 10월 20일
+- [x] getMyApplications // 10월 21일
 
 ### Like
 
