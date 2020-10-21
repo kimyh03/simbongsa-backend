@@ -21,6 +21,7 @@ type Answer {
   createdAt: DateTime!
   text: String!
   question: Question!
+  questionId: Float!
 }
 
 type Question {
@@ -152,6 +153,7 @@ type Query {
   getPosts(data: GetPostsInput!): GetPostsOutput!
   getAllApplications: [Application!]!
   getAllQuestions: [Question!]!
+  getAllAnswer: [Answer!]!
 }
 
 input GetPostsInput {
@@ -176,6 +178,7 @@ type Mutation {
   toggleLike(postId: Float!): CommonOutput!
   createQuestion(text: String!, postId: Float!): CommonOutput!
   deleteQuestion(questionId: Float!): CommonOutput!
+  deleteAnswer(id: Float!): Boolean!
   answerTheQuestion(text: String!, questionId: Float!): CommonOutput!
 }
 

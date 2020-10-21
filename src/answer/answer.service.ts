@@ -12,13 +12,28 @@ export class AnswerService {
     private readonly questionService: QuestionService,
   ) {}
 
-  async create(qeustionId: number, userId: number, text: string) {
+  async findAll() {
+    return this.answerRepository.find({ relations: ['question'] });
+  }
+
+  async delete(id: number) {
+    const answer = await this.answerRepository.findOne(id);
+    this.answerRepository.remove(answer);
+    return null;
+  }
+
+  async create(questionId: number, userId: number, text: string) {
     try {
+      const existAnswer = await this.answerRepository.findOne({
+        where: { questionId },
+      });
+      console.log(existAnswer);
+      if (existAnswer) throw new Error('이미 답변했습니다.');
       const {
         question,
         error,
         hostId,
-      } = await this.questionService.findOneById(qeustionId);
+      } = await this.questionService.findOneById(questionId);
       if (error) throw new Error(error);
       if (hostId !== userId) throw new UnauthorizedException();
       const newAnswer = this.answerRepository.create({ question, text });

@@ -3,14 +3,7 @@ import { Answer } from 'src/answer/answer.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  RelationId,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne, RelationId } from 'typeorm';
 
 // 봉사활동 모집 공고에 대한 질문
 
@@ -54,6 +47,5 @@ export class Question extends CoreEntity {
     answer => answer.question,
     { nullable: true },
   )
-  @JoinColumn()
   answer?: Answer;
 }

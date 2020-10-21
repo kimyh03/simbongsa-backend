@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Question } from 'src/question/question.entity';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, RelationId } from 'typeorm';
 
 // 봉사활동 모집 공고 질문에 대한 답변
 
@@ -19,5 +19,11 @@ export class Answer extends CoreEntity {
     question => question.answer,
     { onDelete: 'CASCADE' },
   )
+  @JoinColumn()
   question: Question;
+
+  @Field()
+  @RelationId((answer: Answer) => answer.question)
+  @Column({ nullable: true })
+  questionId: number;
 }
