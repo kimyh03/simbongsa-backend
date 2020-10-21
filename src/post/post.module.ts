@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Application } from 'src/application/application.entity';
+import { ApplicationService } from 'src/application/application.service';
+import { Like } from 'src/like/like.entity';
+import { LikeService } from 'src/like/like.service';
 import { UserModule } from 'src/user/user.module';
 import { Post } from './post.entity';
 import { PostResolver } from './post.resolver';
 import { PostService } from './post.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post]), UserModule],
-  providers: [PostResolver, PostService],
+  imports: [TypeOrmModule.forFeature([Post, Like, Application]), UserModule],
+  providers: [PostResolver, PostService, LikeService, ApplicationService],
   exports: [PostService],
 })
 export class PostModule {}

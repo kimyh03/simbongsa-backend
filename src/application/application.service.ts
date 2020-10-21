@@ -25,6 +25,23 @@ export class ApplicationService {
     });
   }
 
+  async findOneByIds(userId: number, postId: number) {
+    try {
+      const application = await this.applicationRepository.findOne({
+        where: { userId, postId },
+      });
+      return {
+        application,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        application: null,
+        error,
+      };
+    }
+  }
+
   async create(userId: number, postId: number) {
     try {
       const isExist = await this.applicationRepository.findOne({

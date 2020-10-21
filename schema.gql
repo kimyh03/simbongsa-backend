@@ -51,6 +51,7 @@ type Post {
   isCompleted: Boolean!
   isMine: Boolean
   isLiked: Boolean
+  isApplied: Boolean
   user: User!
   userId: Float!
   applications: [Application!]

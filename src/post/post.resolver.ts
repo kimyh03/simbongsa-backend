@@ -1,8 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
+import { LikeService } from 'src/like/like.service';
 import { User } from 'src/user/user.entity';
 import { CreatePostInput } from './dto/CreatePost.dto';
 import { EditPostInput } from './dto/EditPost.dto';
@@ -14,7 +16,11 @@ import { PostService } from './post.service';
 
 @Resolver()
 export class PostResolver {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly likes: LikeService,
+    private readonly applicatoins: ApplicationService,
+  ) {}
 
   @Query(() => [Post])
   async getAllPosts() {
@@ -61,33 +67,21 @@ export class PostResolver {
 
   @Query(() => GetPostDetailOutput)
   async getPostDetail(
-    @CurrentUser('user') currentUser: User,
+    @CurrentUser('user') user: User,
     @Args('postId') postId: number,
   ): Promise<GetPostDetailOutput> {
     try {
       const { error, post } = await this.postService.findOneById(postId);
       if (error) throw new Error(error);
-      if (currentUser) {
-        if (post.userId === currentUser.id) {
-          post.isMine = true;
-        } else {
-          post.isMine = false;
-        }
-        //Like 작업 후 추가예정
-        /*
-        const isLiked = await this.likeService.findOneByUserIdAndPostId(
-          currentUser.id,
+      if (user) {
+        if (post.userId === user.id) post.isMine = true;
+        const { like } = await this.likes.findOneByIds(user.id, postId);
+        if (like) post.isLiked = true;
+        const { application } = await this.applicatoins.findOneByIds(
+          user.id,
           postId,
         );
-        if (isLiked) {
-          post.isLiked = true;
-        } else {
-          post.isLiked = false;
-        }
-        */
-      } else {
-        post.isMine = false;
-        post.isLiked = false;
+        if (application) post.isApplied = true;
       }
       return { ok: true, error: null, post };
     } catch (error) {

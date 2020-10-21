@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { PostService } from 'src/post/post.service';
@@ -37,6 +37,18 @@ export class LikeService {
       return { error: null };
     } catch (error) {
       return { error };
+    }
+  }
+
+  async findOneByIds(userId: number, postId: number) {
+    try {
+      const like = await this.likeRepository.findOne({
+        where: { userId, postId },
+      });
+      if (!like) throw new NotFoundException();
+      return { error: null, like };
+    } catch (error) {
+      return { error, like: null };
     }
   }
 }
