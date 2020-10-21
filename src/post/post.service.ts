@@ -21,7 +21,7 @@ export class PostService {
 
   async findAllPosts() {
     return await this.postRepository.find({
-      relations: ['likes', 'questions'],
+      relations: ['likes', 'questions', 'applications'],
     });
   }
 

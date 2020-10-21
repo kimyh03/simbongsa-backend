@@ -8,6 +8,7 @@ import { PostService } from 'src/post/post.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { Application } from './application.entity';
+import { applicationStatus } from './dto/ApplicationStatus.enum';
 
 @Injectable()
 export class ApplicationService {
@@ -51,7 +52,11 @@ export class ApplicationService {
     }
   }
 
-  async toggleIsAccepted(applicationId: number, userId: number) {
+  async setStatus(
+    status: applicationStatus,
+    applicationId: number,
+    userId: number,
+  ) {
     try {
       const application = await this.applicationRepository.findOne(
         applicationId,
@@ -62,7 +67,7 @@ export class ApplicationService {
       );
       if (error) throw new Error(error);
       if (post.userId !== userId) throw new UnauthorizedException();
-      application.isAccepted = !application.isAccepted;
+      application.status = status;
       await this.applicationRepository.save(application);
       return { error: null };
     } catch (error) {
@@ -76,11 +81,7 @@ export class ApplicationService {
         applicationId,
       );
       if (!application) throw new NotFoundException();
-      const { post, error } = await this.postService.findOneById(
-        application.postId,
-      );
-      if (error) throw new Error(error);
-      if (post.userId === userId || application.id === userId) {
+      if (application.userId === userId) {
         await this.applicationRepository.remove(application);
         return { error: null };
       } else {

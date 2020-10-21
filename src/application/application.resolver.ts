@@ -1,11 +1,20 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Query,
+  registerEnumType,
+  Resolver,
+} from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
 import { Application } from './application.entity';
 import { ApplicationService } from './application.service';
+import { applicationStatus } from './dto/ApplicationStatus.enum';
+
+registerEnumType(applicationStatus, { name: 'applicationStatus' });
 
 @Resolver()
 export class ApplicationResolver {
@@ -42,12 +51,14 @@ export class ApplicationResolver {
 
   @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)
-  async toggleAccept(
+  async handleApplication(
     @CurrentUser() currentUser: User,
     @Args('applicationId') applicationId: number,
+    @Args('status') status: applicationStatus,
   ): Promise<CommonOutput> {
     try {
-      const { error } = await this.applicationService.toggleIsAccepted(
+      const { error } = await this.applicationService.setStatus(
+        status,
         applicationId,
         currentUser.id,
       );
