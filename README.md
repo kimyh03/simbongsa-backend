@@ -46,7 +46,6 @@
 - [x] completePost // 10월 20일
 - [x] deletePost // 10월 19일
 - [x] getMyPosts // 10월 19일
-- [ ] getLikedPosts
 - [ ] getAppliedPosts
 
 ### Application
@@ -58,6 +57,7 @@
 ### Like
 
 - [x] toggleLike // 10월 20일
+- [x] getLikes // 10월 21일
 
 ### Question
 

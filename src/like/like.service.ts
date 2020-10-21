@@ -51,4 +51,16 @@ export class LikeService {
       return { error, like: null };
     }
   }
+
+  async findAllByUserId(userId: number) {
+    try {
+      const likes = await this.likeRepository.find({
+        where: { userId },
+        relations: ['post'],
+      });
+      return { error: null, likes };
+    } catch (error) {
+      return { error, likes: null };
+    }
+  }
 }
