@@ -86,6 +86,17 @@ type Application {
   postId: Float!
 }
 
+type Certificate {
+  id: ID!
+  createdAt: DateTime!
+  title: String!
+  host: String!
+  recognizedHours: Float!
+  date: DateTime!
+  user: User!
+  userId: Float!
+}
+
 type User {
   id: ID!
   createdAt: DateTime!
@@ -98,6 +109,7 @@ type User {
   applications: [Application!]
   likes: [Like!]
   questions: [Question!]
+  certificates: [Certificate!]
 }
 
 type CommonOutput {

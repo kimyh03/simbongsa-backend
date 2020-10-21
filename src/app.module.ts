@@ -22,6 +22,10 @@ import { ApplicationModule } from './application/application.module';
 import { LikeModule } from './like/like.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
+import { CertificateService } from './certificate/certificate.service';
+import { CertificateResolver } from './certificate/certificate.resolver';
+import { CertificateModule } from './certificate/certificate.module';
+import { Certificate } from './certificate/certificate.entity';
 
 @Module({
   imports: [
@@ -44,7 +48,7 @@ import { AnswerModule } from './answer/answer.module';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Post, Application, Like, Question, Answer],
+      entities: [User, Post, Application, Like, Question, Answer, Certificate],
       synchronize: true,
       logging: true,
     }),
@@ -58,7 +62,9 @@ import { AnswerModule } from './answer/answer.module';
     LikeModule,
     QuestionModule,
     AnswerModule,
+    CertificateModule,
   ],
+  providers: [CertificateService, CertificateResolver],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

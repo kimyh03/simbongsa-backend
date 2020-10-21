@@ -4,6 +4,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Like } from 'src/like/like.entity';
 import { Post } from 'src/post/post.entity';
 import { Question } from 'src/question/question.entity';
+import { Certificate } from 'src/certificate/certificate.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 // 사용자
@@ -65,4 +66,12 @@ export class User extends CoreEntity {
     { nullable: true },
   )
   questions?: Question[];
+
+  @Field(() => [Certificate], { nullable: true })
+  @OneToMany(
+    () => Certificate,
+    certificate => certificate.user,
+    { nullable: true },
+  )
+  certificates?: Certificate[];
 }

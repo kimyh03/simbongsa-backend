@@ -23,6 +23,7 @@
 - Like (모집공고 좋아요/북마크)
 - Answer (모집공고에 대한 질문)
 - Question (위 질문에 대한 답변)
+- Certificate (봉사활동 증명서)
 
 ---
 
@@ -43,20 +44,20 @@
 - [x] editPost // 10월 19일
 - [x] toggleOpenAndClose // 10월 19일
 - [x] completePost // 10월 20일
-- [x] getMyPosts // 10월 19일
 - [x] deletePost // 10월 19일
+- [x] getMyPosts // 10월 19일
+- [ ] getLikedPosts
+- [ ] getAppliedPosts
 
 ### Application
 
 - [x] applyForPost // 10월 20일
-- [x] toggleAccept // 10월 20일
+- [x] handleApplication // 10월 21일
 - [x] cancelApplication  // 10월 20일
-- [ ] getMyApplications
 
 ### Like
 
 - [x] toggleLike // 10월 20일
-- [ ] getMyLikes
 
 ### Question
 
@@ -66,3 +67,8 @@
 ### Answer
 
 - [x] createAnswer // 10월 20일
+
+### Certificate
+
+- [ ] issueCertificate
+- [ ] getMyCertificates

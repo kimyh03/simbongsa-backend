@@ -80,6 +80,7 @@ export class Post extends CoreEntity {
   @Field({ nullable: true, defaultValue: false })
   isLiked: boolean;
 
+  // 참가신청여부(client에서 사용, apply여부에 따라 참가신청 || 신청취소 버튼 출력)
   @Field({ nullable: true, defaultValue: false })
   isApplied: boolean;
 
