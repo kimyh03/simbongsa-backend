@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import { CertificateService } from 'src/certificate/certificate.service';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { LikeService } from 'src/like/like.service';
 import { User } from 'src/user/user.entity';
@@ -20,6 +21,7 @@ export class PostResolver {
     private readonly postService: PostService,
     private readonly likes: LikeService,
     private readonly applicatoins: ApplicationService,
+    private readonly certificates: CertificateService,
   ) {}
 
   @Query(() => [Post])
@@ -184,11 +186,21 @@ export class PostResolver {
     @Args('postId') postId: number,
   ): Promise<CommonOutput> {
     try {
-      const { error } = await this.postService.setIsCompleteTrue(
+      const { error: PError } = await this.postService.setIsCompleteTrue(
         postId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (PError) throw new Error(PError);
+      const { error: CError } = await this.certificates.create(
+        postId,
+        currentUser.id,
+      );
+      if (CError) throw new Error(CError);
+      const { error: AError } = await this.applicatoins.deleteAllOfPost(
+        postId,
+        currentUser.id,
+      );
+      if (AError) throw new Error(AError);
       return {
         ok: true,
         error: null,
@@ -196,7 +208,7 @@ export class PostResolver {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }

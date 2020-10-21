@@ -25,11 +25,20 @@ export class PostService {
     });
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: number, relations?: string[]) {
     try {
-      const post = await this.postRepository.findOne(id);
-      if (!post) throw new NotFoundException();
-      return { error: null, post };
+      if (relations) {
+        const post = await this.postRepository.findOne({
+          where: { id },
+          relations: [...relations],
+        });
+        if (!post) throw new NotFoundException();
+        return { error: null, post };
+      } else {
+        const post = await this.postRepository.findOne(id);
+        if (!post) throw new NotFoundException();
+        return { error: null, post };
+      }
     } catch (error) {
       return { error: error.message, post: null };
     }
@@ -87,11 +96,6 @@ export class PostService {
       const post = await this.postRepository.findOne(postId);
       if (!post) throw new NotFoundException();
       if (post.userId !== userId) throw new UnauthorizedException();
-      if (post.isCompleted === true) {
-        throw new Error(
-          '활동이 성공적으로 종료된 모집공고는 삭제할 수 없습니다.',
-        );
-      }
       await this.postRepository.remove(post);
       return { error: null };
     } catch (error) {

@@ -22,8 +22,6 @@ import { ApplicationModule } from './application/application.module';
 import { LikeModule } from './like/like.module';
 import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
-import { CertificateService } from './certificate/certificate.service';
-import { CertificateResolver } from './certificate/certificate.resolver';
 import { CertificateModule } from './certificate/certificate.module';
 import { Certificate } from './certificate/certificate.entity';
 
@@ -64,7 +62,6 @@ import { Certificate } from './certificate/certificate.entity';
     AnswerModule,
     CertificateModule,
   ],
-  providers: [CertificateService, CertificateResolver],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

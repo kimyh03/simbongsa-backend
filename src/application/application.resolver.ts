@@ -82,7 +82,7 @@ export class ApplicationResolver {
     @Args('applicationId') applicationId: number,
   ): Promise<CommonOutput> {
     try {
-      const { error } = await this.applicationService.delete(
+      const { error } = await this.applicationService.deleteById(
         applicationId,
         currentUser.id,
       );

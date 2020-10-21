@@ -92,7 +92,7 @@ export class ApplicationService {
     }
   }
 
-  async delete(applicationId: number, userId: number) {
+  async deleteById(applicationId: number, userId: number) {
     try {
       const application = await this.applicationRepository.findOne(
         applicationId,
@@ -104,6 +104,21 @@ export class ApplicationService {
       } else {
         throw new UnauthorizedException();
       }
+    } catch (error) {
+      return { error };
+    }
+  }
+
+  async deleteAllOfPost(postId: number, userId: number) {
+    try {
+      const { post } = await this.postService.findOneById(postId, [
+        'applications',
+      ]);
+      if (post.userId !== userId) throw new UnauthorizedException();
+      await post.applications.map(application =>
+        this.applicationRepository.remove(application),
+      );
+      return { error: null };
     } catch (error) {
       return { error };
     }
