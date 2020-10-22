@@ -50,8 +50,9 @@ export class PostService {
     }
   }
 
-  async editPost(userId: number, postId: number, data: EditPostInput) {
+  async editPost(userId: number, args: EditPostInput) {
     try {
+      const { postId, ...data } = args;
       const { error, post } = await this.findOneById(postId);
       if (error) throw new Error(error);
       if (post.userId !== userId) throw new UnauthorizedException();

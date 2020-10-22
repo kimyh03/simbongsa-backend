@@ -2,9 +2,9 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
-import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
-import { GetLikesOutput } from './dto/GetLikes.dot';
+import { GetMyLikesOutput } from './dto/GetMyLikes.dot';
+import { ToggleLikeInput, ToggleLikeOutput } from './dto/ToggleLike.dto';
 import { LikeService } from './like.service';
 
 @Resolver()
@@ -12,12 +12,13 @@ export class LikeResolver {
   constructor(private readonly likeService: LikeService) {}
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => ToggleLikeOutput)
   async toggleLike(
     @CurrentUser() currentUser: User,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: ToggleLikeInput,
+  ): Promise<ToggleLikeOutput> {
     try {
+      const { postId } = args;
       const { error } = await this.likeService.toggleLike(
         postId,
         currentUser.id,
@@ -36,13 +37,15 @@ export class LikeResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Query(() => GetLikesOutput)
-  async getMyLikes(@CurrentUser() currentUser: User): Promise<GetLikesOutput> {
-    const { likes, error } = await this.likeService.findAllByUserId(
-      currentUser.id,
-    );
-    if (error) throw new Error(error);
+  @Query(() => GetMyLikesOutput)
+  async getMyLikes(
+    @CurrentUser() currentUser: User,
+  ): Promise<GetMyLikesOutput> {
     try {
+      const { likes, error } = await this.likeService.findAllByUserId(
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
       return {
         ok: true,
         error: null,

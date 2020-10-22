@@ -4,14 +4,22 @@ import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CertificateService } from 'src/certificate/certificate.service';
-import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { LikeService } from 'src/like/like.service';
 import { User } from 'src/user/user.entity';
-import { CreatePostInput } from './dto/CreatePost.dto';
-import { EditPostInput } from './dto/EditPost.dto';
+import { CompletePostInput, CompletePostOutput } from './dto/CompletePost.dto';
+import { CreatePostInput, CreatePostOutput } from './dto/CreatePost.dto';
+import { DeletePostInput, DeletePostOutput } from './dto/DeletePost.dto';
+import { EditPostInput, EditPostOutput } from './dto/EditPost.dto';
 import { GetMyPostsOutput } from './dto/GetMyPosts.dto';
-import { GetPostDetailOutput } from './dto/GetPostDetail.dto';
+import {
+  GetPostDetailInput,
+  GetPostDetailOutput,
+} from './dto/GetPostDetail.dto';
 import { GetPostsInput, GetPostsOutput } from './dto/GetPosts.dto';
+import {
+  ToggleOpenAndCloseInput,
+  ToggleOpenAndCloseOutput,
+} from './dto/ToggleOpenAndClose.dto';
 import { PostService } from './post.service';
 
 @Resolver()
@@ -24,13 +32,13 @@ export class PostResolver {
   ) {}
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => CreatePostOutput)
   async createPost(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('data') data: CreatePostInput,
-  ): Promise<CommonOutput> {
+    @Args('args') args: CreatePostInput,
+  ): Promise<CreatePostOutput> {
     try {
-      const { error } = await this.postService.createPost(currentUser.id, data);
+      const { error } = await this.postService.createPost(currentUser.id, args);
       if (error) {
         throw Error(error);
       } else {
@@ -42,18 +50,13 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => EditPostOutput)
   async editPost(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('data') data: EditPostInput,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: EditPostInput,
+  ): Promise<EditPostOutput> {
     try {
-      const { error } = await this.postService.editPost(
-        currentUser.id,
-        postId,
-        data,
-      );
+      const { error } = await this.postService.editPost(currentUser.id, args);
       if (error) throw new Error(error);
       return { ok: true, error: null };
     } catch (error) {
@@ -64,9 +67,10 @@ export class PostResolver {
   @Query(() => GetPostDetailOutput)
   async getPostDetail(
     @CurrentUser('user') user: User,
-    @Args('postId') postId: number,
+    @Args('args') args: GetPostDetailInput,
   ): Promise<GetPostDetailOutput> {
     try {
+      const { postId } = args;
       const { error, post } = await this.postService.findOneById(postId);
       if (error) throw new Error(error);
       if (user) {
@@ -86,12 +90,13 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => ToggleOpenAndCloseOutput)
   async toggleOpenAndClose(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: ToggleOpenAndCloseInput,
+  ): Promise<ToggleOpenAndCloseOutput> {
     try {
+      const { postId } = args;
       const { error } = await this.postService.toggleOpenAndClose(
         currentUser.id,
         postId,
@@ -128,12 +133,13 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => DeletePostOutput)
   async deletePost(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: DeletePostInput,
+  ): Promise<DeletePostOutput> {
     try {
+      const { postId } = args;
       const { error } = await this.postService.delete(currentUser.id, postId);
       if (error) throw new Error(error);
       return {
@@ -174,12 +180,13 @@ export class PostResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => CompletePostOutput)
   async completePost(
     @CurrentUser() currentUser: User,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: CompletePostInput,
+  ): Promise<CompletePostOutput> {
     try {
+      const { postId } = args;
       const { error: PError } = await this.postService.setIsCompleteTrue(
         postId,
         currentUser.id,

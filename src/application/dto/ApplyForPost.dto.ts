@@ -1,15 +1,11 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
-import { Post } from '../post.entity';
 
 @InputType()
-export class GetPostDetailInput {
+export class ApplyForPostInput {
   @Field()
   postId: number;
 }
 
 @ObjectType()
-export class GetPostDetailOutput extends CommonOutput {
-  @Field({ nullable: true })
-  post?: Post;
-}
+export class ApplyForPostOutput extends CommonOutput {}

@@ -8,11 +8,19 @@ import {
 } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
-import { CommonOutput } from 'src/common/dto/CommonOutput';
 import { User } from 'src/user/user.entity';
 import { ApplicationService } from './application.service';
 import { applicationStatus } from './dto/ApplicationStatus.enum';
+import { ApplyForPostInput, ApplyForPostOutput } from './dto/ApplyForPost.dto';
+import {
+  CalcelApplicationOutput,
+  CancelApplicationInput,
+} from './dto/CancelApplication.dto';
 import { GetMyApplicationsOutput } from './dto/GetMyApplications.dto';
+import {
+  HandleApplicationInput,
+  HandleApplicationOutput,
+} from './dto/HandleApplication.dto';
 
 registerEnumType(applicationStatus, { name: 'applicationStatus' });
 
@@ -21,12 +29,13 @@ export class ApplicationResolver {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => ApplyForPostOutput)
   async applyForPost(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('postId') postId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: ApplyForPostInput,
+  ): Promise<ApplyForPostOutput> {
     try {
+      const { postId } = args;
       const { error } = await this.applicationService.create(
         currentUser.id,
         postId,
@@ -45,13 +54,13 @@ export class ApplicationResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => HandleApplicationOutput)
   async handleApplication(
     @CurrentUser() currentUser: User,
-    @Args('applicationId') applicationId: number,
-    @Args('status') status: applicationStatus,
-  ): Promise<CommonOutput> {
+    @Args('args') args: HandleApplicationInput,
+  ): Promise<HandleApplicationOutput> {
     try {
+      const { status, applicationId } = args;
       const { error } = await this.applicationService.setStatus(
         status,
         applicationId,
@@ -71,12 +80,13 @@ export class ApplicationResolver {
   }
 
   @UseGuards(LogInOnly)
-  @Mutation(() => CommonOutput)
+  @Mutation(() => CalcelApplicationOutput)
   async cancelApplication(
     @CurrentUser() currentUser: User,
-    @Args('applicationId') applicationId: number,
-  ): Promise<CommonOutput> {
+    @Args('args') args: CancelApplicationInput,
+  ): Promise<CalcelApplicationOutput> {
     try {
+      const { applicationId } = args;
       const { error } = await this.applicationService.deleteById(
         applicationId,
         currentUser.id,
