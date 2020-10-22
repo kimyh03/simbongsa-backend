@@ -70,20 +70,21 @@ export class PostResolver {
     @Args('args') args: GetPostDetailInput,
   ): Promise<GetPostDetailOutput> {
     try {
+      let isMine, isLiked, isApplied;
       const { postId } = args;
       const { error, post } = await this.postService.findOneById(postId);
       if (error) throw new Error(error);
       if (user) {
-        if (post.userId === user.id) post.isMine = true;
+        if (post.userId === user.id) isMine = true;
         const { like } = await this.likes.findOneByIds(user.id, postId);
-        if (like) post.isLiked = true;
+        if (like) isLiked = true;
         const { application } = await this.applicatoins.findOneByIds(
           user.id,
           postId,
         );
-        if (application) post.isApplied = true;
+        if (application) isApplied = true;
       }
-      return { ok: true, error: null, post };
+      return { ok: true, error: null, post, isMine, isLiked, isApplied };
     } catch (error) {
       return { ok: false, error: error.message, post: null };
     }
@@ -155,14 +156,14 @@ export class PostResolver {
   }
 
   @Query(() => GetPostsOutput)
-  async getPosts(@Args('data') data: GetPostsInput): Promise<GetPostsOutput> {
+  async getPosts(@Args('args') args: GetPostsInput): Promise<GetPostsOutput> {
     try {
       const {
         error,
         posts,
         totalCount,
         totalPage,
-      } = await this.postService.findByFilter(data);
+      } = await this.postService.findByFilter(args);
       if (error) throw new Error(error);
       return {
         ok: true,

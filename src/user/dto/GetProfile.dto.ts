@@ -12,4 +12,7 @@ export class getProfileInput {
 export class GetProfileOutput extends CommonOutput {
   @Field(() => User, { nullable: true })
   user?: User;
+
+  @Field({ defaultValue: false })
+  isSelf?: boolean;
 }

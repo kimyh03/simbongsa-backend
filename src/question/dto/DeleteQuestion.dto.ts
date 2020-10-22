@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
 
 @InputType()
@@ -7,4 +7,5 @@ export class DeleteQuestionInput {
   questionId: number;
 }
 
+@ObjectType()
 export class DeleteQuestionOutput extends CommonOutput {}

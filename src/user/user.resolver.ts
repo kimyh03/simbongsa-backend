@@ -60,11 +60,11 @@ export class UserResolver {
       const { user, error } = await this.userService.findOneById(userId);
       if (error) throw new Error(error);
       const isSelf = currentUser.id === userId;
-      user.isSelf = isSelf;
       return {
         ok: true,
         error: null,
         user,
+        isSelf,
       };
     } catch (error) {
       return {
