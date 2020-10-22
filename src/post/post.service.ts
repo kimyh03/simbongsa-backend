@@ -168,10 +168,8 @@ export class PostService {
     }
   }
 
-  async setIsCompleteTrue(postId: number, userId: number) {
+  async setIsCompleteTrue(post: Post, userId: number) {
     try {
-      const post = await this.postRepository.findOne(postId);
-      if (!post) throw new NotFoundException();
       if (post.userId !== userId) throw new UnauthorizedException();
       post.isCompleted = true;
       await this.postRepository.save(post);

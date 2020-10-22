@@ -188,18 +188,22 @@ export class PostResolver {
   ): Promise<CompletePostOutput> {
     try {
       const { postId } = args;
+      const { post, error } = await this.postService.findOneById(postId, [
+        'applications',
+      ]);
+      if (error) throw new Error(error);
       const { error: PError } = await this.postService.setIsCompleteTrue(
-        postId,
+        post,
         currentUser.id,
       );
       if (PError) throw new Error(PError);
       const { error: CError } = await this.certificates.create(
-        postId,
+        post,
         currentUser.id,
       );
       if (CError) throw new Error(CError);
       const { error: AError } = await this.applicatoins.deleteAllOfPost(
-        postId,
+        post,
         currentUser.id,
       );
       if (AError) throw new Error(AError);

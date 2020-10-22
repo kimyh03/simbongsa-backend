@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Post } from 'src/post/post.entity';
 import { PostService } from 'src/post/post.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
@@ -103,14 +104,12 @@ export class ApplicationService {
     }
   }
 
-  async deleteAllOfPost(postId: number, userId: number) {
+  async deleteAllOfPost(post: Post, userId: number) {
     try {
-      const { post } = await this.postService.findOneById(postId, [
-        'applications',
-      ]);
       if (post.userId !== userId) throw new UnauthorizedException();
-      await post.applications.map(application =>
-        this.applicationRepository.remove(application),
+      post.applications.forEach(
+        async application =>
+          await this.applicationRepository.remove(application),
       );
       return { error: null };
     } catch (error) {
