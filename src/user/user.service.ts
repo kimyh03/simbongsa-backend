@@ -17,14 +17,6 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getToken(userId: number) {
-    return this.authService.sign(userId);
-  }
-
-  async decodeToken(token: string) {
-    return this.authService.verify(token);
-  }
-
   async findOneById(userId: number) {
     try {
       const user = await this.userRepository.findOne(userId);

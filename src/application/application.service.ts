@@ -19,12 +19,6 @@ export class ApplicationService {
     private readonly userService: UserService,
   ) {}
 
-  async findAll() {
-    return await this.applicationRepository.find({
-      relations: ['post', 'user'],
-    });
-  }
-
   async findOneByIds(userId: number, postId: number) {
     try {
       const application = await this.applicationRepository.findOne({

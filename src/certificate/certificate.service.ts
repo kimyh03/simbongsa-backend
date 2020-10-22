@@ -16,10 +16,6 @@ export class CertificateService {
     private readonly postService: PostService,
   ) {}
 
-  async findAll() {
-    return await this.certificateRepository.find();
-  }
-
   async create(postId: number, userId: number) {
     try {
       const { post, error } = await this.postService.findOneById(postId, [

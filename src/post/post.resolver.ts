@@ -12,7 +12,6 @@ import { EditPostInput } from './dto/EditPost.dto';
 import { GetMyPostsOutput } from './dto/GetMyPosts.dto';
 import { GetPostDetailOutput } from './dto/GetPostDetail.dto';
 import { GetPostsInput, GetPostsOutput } from './dto/GetPosts.dto';
-import { Post } from './post.entity';
 import { PostService } from './post.service';
 
 @Resolver()
@@ -23,11 +22,6 @@ export class PostResolver {
     private readonly applicatoins: ApplicationService,
     private readonly certificates: CertificateService,
   ) {}
-
-  @Query(() => [Post])
-  async getAllPosts() {
-    return await this.postService.findAllPosts();
-  }
 
   @UseGuards(LogInOnly)
   @Mutation(() => CommonOutput)

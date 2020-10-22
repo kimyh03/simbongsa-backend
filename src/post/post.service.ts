@@ -19,12 +19,6 @@ export class PostService {
     private readonly postRepository: Repository<Post>,
   ) {}
 
-  async findAllPosts() {
-    return await this.postRepository.find({
-      relations: ['likes', 'questions', 'applications'],
-    });
-  }
-
   async findOneById(id: number, relations?: string[]) {
     try {
       if (relations) {

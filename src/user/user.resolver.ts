@@ -10,21 +10,6 @@ import { UserService } from './user.service';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(() => String)
-  hi(@CurrentUser() currentUser: User) {
-    return `hi ${currentUser.username}`;
-  }
-
-  @Query(() => String)
-  getToken(@Args('userId') userId: number) {
-    return this.userService.getToken(userId);
-  }
-
-  @Query(() => String)
-  decodeToken(@Args('token') token: string) {
-    return this.userService.decodeToken(token);
-  }
-
   @Mutation(() => SignUpOutput)
   async signUp(@Args('data') data: SignUpInput): Promise<SignUpOutput> {
     try {

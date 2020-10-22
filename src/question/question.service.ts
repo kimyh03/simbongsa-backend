@@ -18,10 +18,6 @@ export class QuestionService {
     private readonly postService: PostService,
   ) {}
 
-  async findAll() {
-    return await this.questionRepository.find({ relations: ['answer'] });
-  }
-
   async create(text: string, postId: number, userId: number) {
     try {
       const { post, error: pError } = await this.postService.findOneById(

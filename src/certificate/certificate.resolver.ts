@@ -3,18 +3,12 @@ import { Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { User } from 'src/user/user.entity';
-import { Certificate } from './certificate.entity';
 import { CertificateService } from './certificate.service';
 import { GetMyCertificatesOutput } from './dto/GetMyCertificates.dto';
 
 @Resolver()
 export class CertificateResolver {
   constructor(private readonly certificateService: CertificateService) {}
-
-  @Query(() => [Certificate])
-  async getAllCertificate() {
-    return await this.certificateService.findAll();
-  }
 
   @UseGuards(LogInOnly)
   @Query(() => GetMyCertificatesOutput)

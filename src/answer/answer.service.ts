@@ -12,16 +12,6 @@ export class AnswerService {
     private readonly questionService: QuestionService,
   ) {}
 
-  async findAll() {
-    return this.answerRepository.find({ relations: ['question'] });
-  }
-
-  async delete(id: number) {
-    const answer = await this.answerRepository.findOne(id);
-    this.answerRepository.remove(answer);
-    return null;
-  }
-
   async create(questionId: number, userId: number, text: string) {
     try {
       const existAnswer = await this.answerRepository.findOne({
