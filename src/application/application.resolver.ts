@@ -86,9 +86,9 @@ export class ApplicationResolver {
     @Args('args') args: CancelApplicationInput,
   ): Promise<CalcelApplicationOutput> {
     try {
-      const { applicationId } = args;
-      const { error } = await this.applicationService.deleteById(
-        applicationId,
+      const { postId } = args;
+      const { error } = await this.applicationService.deleteByPostId(
+        postId,
         currentUser.id,
       );
       if (error) throw new Error(error);

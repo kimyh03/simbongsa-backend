@@ -329,7 +329,7 @@ input HandleApplicationInput {
 }
 
 input CancelApplicationInput {
-  applicationId: Float!
+  postId: Float!
 }
 
 input ToggleLikeInput {

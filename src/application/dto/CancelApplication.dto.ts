@@ -4,7 +4,7 @@ import { CommonOutput } from 'src/common/dto/CommonOutput';
 @InputType()
 export class CancelApplicationInput {
   @Field()
-  applicationId: number;
+  postId: number;
 }
 
 @ObjectType()

@@ -86,11 +86,11 @@ export class ApplicationService {
     }
   }
 
-  async deleteById(applicationId: number, userId: number) {
+  async deleteByPostId(postId: number, userId: number) {
     try {
-      const application = await this.applicationRepository.findOne(
-        applicationId,
-      );
+      const application = await this.applicationRepository.findOne({
+        where: { postId, userId },
+      });
       if (!application) throw new NotFoundException();
       if (application.userId === userId) {
         await this.applicationRepository.remove(application);
