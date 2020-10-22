@@ -40,7 +40,7 @@ export class ApplicationResolver {
         currentUser.id,
         postId,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -48,7 +48,7 @@ export class ApplicationResolver {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }
@@ -66,7 +66,7 @@ export class ApplicationResolver {
         applicationId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -74,7 +74,7 @@ export class ApplicationResolver {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }
@@ -91,7 +91,7 @@ export class ApplicationResolver {
         postId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -99,7 +99,7 @@ export class ApplicationResolver {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }
@@ -114,7 +114,7 @@ export class ApplicationResolver {
         applications,
         error,
       } = await this.applicationService.findAllByUserId(currentUser.id);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         applications,
         ok: true,
@@ -124,7 +124,7 @@ export class ApplicationResolver {
       return {
         applications: null,
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }

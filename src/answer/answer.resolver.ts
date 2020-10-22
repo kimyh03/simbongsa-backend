@@ -26,7 +26,7 @@ export class AnswerResolver {
         currentUser.id,
         text,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,

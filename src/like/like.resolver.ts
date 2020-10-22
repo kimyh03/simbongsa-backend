@@ -23,7 +23,7 @@ export class LikeResolver {
         postId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -31,7 +31,7 @@ export class LikeResolver {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: error.message,
       };
     }
   }
@@ -45,7 +45,7 @@ export class LikeResolver {
       const { likes, error } = await this.likeService.findAllByUserId(
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,

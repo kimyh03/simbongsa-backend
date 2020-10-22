@@ -32,7 +32,7 @@ export class CertificateService {
       return { error: null };
     } catch (error) {
       return {
-        error,
+        error: error.message,
       };
     }
   }
@@ -44,7 +44,7 @@ export class CertificateService {
       });
       return { certificates, error: null };
     } catch (error) {
-      return { error, certificates: null };
+      return { error: error.message, certificates: null };
     }
   }
 }

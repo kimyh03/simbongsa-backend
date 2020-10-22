@@ -23,7 +23,7 @@ export class UserService {
       if (!user) throw new NotFoundException();
       return { user, error: null };
     } catch (error) {
-      return { user: null, error };
+      return { user: null, error: error.message };
     }
   }
 

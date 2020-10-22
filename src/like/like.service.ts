@@ -27,16 +27,17 @@ export class LikeService {
         const { user, error: uError } = await this.userService.findOneById(
           userId,
         );
+        if (uError) throw new Error(uError.message);
         const { post, error: pError } = await this.postService.findOneById(
           postId,
         );
-        if (uError || pError) throw new Error();
+        if (pError) throw new Error(pError.message);
         const newLike = this.likeRepository.create({ user, post });
         await this.likeRepository.save(newLike);
       }
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -48,7 +49,7 @@ export class LikeService {
       if (!like) throw new NotFoundException();
       return { error: null, like };
     } catch (error) {
-      return { error, like: null };
+      return { error: error.message, like: null };
     }
   }
 
@@ -60,7 +61,7 @@ export class LikeService {
       });
       return { error: null, likes };
     } catch (error) {
-      return { error, likes: null };
+      return { error: error.message, likes: null };
     }
   }
 }

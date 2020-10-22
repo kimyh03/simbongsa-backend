@@ -40,7 +40,7 @@ export class PostResolver {
     try {
       const { error } = await this.postService.createPost(currentUser.id, args);
       if (error) {
-        throw Error(error);
+        throw Error(error.message);
       } else {
         return { ok: true, error: null };
       }
@@ -57,7 +57,7 @@ export class PostResolver {
   ): Promise<EditPostOutput> {
     try {
       const { error } = await this.postService.editPost(currentUser.id, args);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return { ok: true, error: null };
     } catch (error) {
       return { ok: false, error: error.message };
@@ -73,7 +73,7 @@ export class PostResolver {
       let isMine, isLiked, isApplied;
       const { postId } = args;
       const { error, post } = await this.postService.findOneById(postId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       if (user) {
         if (post.userId === user.id) isMine = true;
         const { like } = await this.likes.findOneByIds(user.id, postId);
@@ -102,7 +102,7 @@ export class PostResolver {
         currentUser.id,
         postId,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return { ok: true, error: null };
     } catch (error) {
       return { ok: false, error: error.message };
@@ -118,7 +118,7 @@ export class PostResolver {
       const { posts, error } = await this.postService.findAllByUserId(
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -142,7 +142,7 @@ export class PostResolver {
     try {
       const { postId } = args;
       const { error } = await this.postService.delete(currentUser.id, postId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -164,7 +164,7 @@ export class PostResolver {
         totalCount,
         totalPage,
       } = await this.postService.findByFilter(args);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -191,22 +191,22 @@ export class PostResolver {
       const { post, error } = await this.postService.findOneById(postId, [
         'applications',
       ]);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       const { error: PError } = await this.postService.setIsCompleteTrue(
         post,
         currentUser.id,
       );
-      if (PError) throw new Error(PError);
+      if (PError) throw new Error(PError.message);
       const { error: CError } = await this.certificates.create(
         post,
         currentUser.id,
       );
-      if (CError) throw new Error(CError);
+      if (CError) throw new Error(CError.message);
       const { error: AError } = await this.applicatoins.deleteAllOfPost(
         post,
         currentUser.id,
       );
-      if (AError) throw new Error(AError);
+      if (AError) throw new Error(AError.message);
       return {
         ok: true,
         error: null,

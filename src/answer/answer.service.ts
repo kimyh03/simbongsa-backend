@@ -24,13 +24,13 @@ export class AnswerService {
         error,
         hostId,
       } = await this.questionService.findOneById(questionId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       if (hostId !== userId) throw new UnauthorizedException();
       const newAnswer = this.answerRepository.create({ question, text });
       await this.answerRepository.save(newAnswer);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 }

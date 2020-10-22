@@ -30,7 +30,7 @@ export class QuestionResolver {
         postId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,
@@ -55,7 +55,7 @@ export class QuestionResolver {
         questionId,
         currentUser.id,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       return {
         ok: true,
         error: null,

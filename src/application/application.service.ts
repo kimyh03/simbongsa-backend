@@ -32,7 +32,7 @@ export class ApplicationService {
     } catch (error) {
       return {
         application: null,
-        error,
+        error: error.message,
       };
     }
   }
@@ -49,8 +49,8 @@ export class ApplicationService {
       const { post, error: pError } = await this.postService.findOneById(
         postId,
       );
-      if (uError) throw new Error(uError);
-      if (pError) throw new Error(pError);
+      if (uError) throw new Error(uError.message);
+      if (pError) throw new Error(pError.message);
       if (post.isCompleted === true || post.isOpened === false)
         throw new Error('모집이 마감 되었습니다.');
       const newApplication = this.applicationRepository.create({
@@ -60,7 +60,7 @@ export class ApplicationService {
       await this.applicationRepository.save(newApplication);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -77,13 +77,13 @@ export class ApplicationService {
       const { post, error } = await this.postService.findOneById(
         application.postId,
       );
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       if (post.userId !== userId) throw new UnauthorizedException();
       application.status = status;
       await this.applicationRepository.save(application);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -100,7 +100,7 @@ export class ApplicationService {
         throw new UnauthorizedException();
       }
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -113,7 +113,7 @@ export class ApplicationService {
       );
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -126,7 +126,7 @@ export class ApplicationService {
       if (!applications) throw new NotFoundException();
       return { applications, error: null };
     } catch (error) {
-      return { applications: null, error };
+      return { applications: null, error: error.message };
     }
   }
 }

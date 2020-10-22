@@ -15,7 +15,7 @@ export class UserResolver {
     try {
       const { error, token } = await this.userService.createUser(args);
       if (error) {
-        throw Error(error);
+        throw Error(error.message);
       } else {
         return {
           ok: true,
@@ -35,7 +35,7 @@ export class UserResolver {
     try {
       const { token, error } = await this.userService.verifyUser(args);
       if (error) {
-        throw Error(error);
+        throw Error(error.message);
       } else {
         return {
           ok: true,
@@ -58,7 +58,7 @@ export class UserResolver {
     try {
       const { userId } = args;
       const { user, error } = await this.userService.findOneById(userId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       const isSelf = currentUser.id === userId;
       return {
         ok: true,

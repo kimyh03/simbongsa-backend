@@ -41,7 +41,7 @@ export class PostService {
   async createPost(userId: number, data: CreatePostInput) {
     try {
       const { user, error } = await this.userService.findOneById(userId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       const newPost = this.postRepository.create({ user, ...data });
       await this.postRepository.save(newPost);
       return { error: null };
@@ -54,7 +54,7 @@ export class PostService {
     try {
       const { postId, ...data } = args;
       const { error, post } = await this.findOneById(postId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       if (post.userId !== userId) throw new UnauthorizedException();
       Object.assign(post, data);
       await this.postRepository.save(post);
@@ -67,7 +67,7 @@ export class PostService {
   async toggleOpenAndClose(userId: number, postId: number) {
     try {
       const { error, post } = await this.findOneById(postId);
-      if (error) throw new Error(error);
+      if (error) throw new Error(error.message);
       if (post.userId !== userId) throw new UnauthorizedException();
       post.isOpened = !post.isOpened;
       await this.postRepository.save(post);
@@ -164,7 +164,7 @@ export class PostService {
         return { error: null, posts, totalCount, totalPage };
       }
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -175,7 +175,7 @@ export class PostService {
       await this.postRepository.save(post);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 }

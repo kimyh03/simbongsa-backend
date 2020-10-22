@@ -23,16 +23,16 @@ export class QuestionService {
       const { post, error: pError } = await this.postService.findOneById(
         postId,
       );
+      if (pError) throw new Error(pError.message);
       const { user, error: uError } = await this.userService.findOneById(
         userId,
       );
-      if (pError) throw new Error(pError);
-      if (uError) throw new Error(uError);
+      if (uError) throw new Error(uError.message);
       const newQuestion = this.questionRepository.create({ post, user, text });
       await this.questionRepository.save(newQuestion);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -44,7 +44,7 @@ export class QuestionService {
       this.questionRepository.remove(existQuestion);
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   }
 
@@ -58,7 +58,7 @@ export class QuestionService {
       const hostId = question.post.userId;
       return { question, error: null, hostId };
     } catch (error) {
-      return { question: null, error, hostId: null };
+      return { question: null, error: error.message, hostId: null };
     }
   }
 }
