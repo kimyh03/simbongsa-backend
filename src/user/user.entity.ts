@@ -32,6 +32,14 @@ export class User extends CoreEntity {
   @Column({ nullable: true })
   avatar?: string;
 
+  // 총 봉사활동 횟수(certificates coulmn count)
+  @Field()
+  activityCount: number;
+
+  // 총 봉사시간
+  @Field()
+  activityTime: number;
+
   @Field(() => [Post], { nullable: true })
   @OneToMany(
     () => Post,

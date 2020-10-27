@@ -1,5 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { LikeService } from 'src/like/like.service';
 import { GetMeOutput } from './dto/GetMe.dto';
 import { getProfileInput, GetProfileOutput } from './dto/GetProfile.dto';
 import { SignInInput, SignInOutput } from './dto/SignIn.dto';
@@ -9,7 +11,11 @@ import { UserService } from './user.service';
 
 @Resolver()
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly likeService: LikeService,
+    private readonly applicationService: ApplicationService,
+  ) {}
 
   @Mutation(() => SignUpOutput)
   async signUp(@Args('args') args: SignUpInput): Promise<SignUpOutput> {
@@ -36,7 +42,7 @@ export class UserResolver {
     try {
       const { token, error } = await this.userService.verifyUser(args);
       if (error) {
-        throw Error(error.message);
+        throw Error(error);
       } else {
         return {
           ok: true,
@@ -58,15 +64,44 @@ export class UserResolver {
   ): Promise<GetProfileOutput> {
     try {
       const { userId } = args;
-      const { user, error } = await this.userService.findOneById(userId);
+      const { user, error } = await this.userService.findOneById(userId, [
+        'posts',
+        'certificates',
+      ]);
       if (error) throw new Error(error.message);
+      user.activityCount = user.certificates?.length;
+      let container = 0;
+      for (let i = 0; i < user.activityCount; i++) {
+        container = container + user.certificates[i].recognizedHours;
+      }
+      user.activityTime = container;
       const isSelf = currentUser.id === userId;
-      return {
-        ok: true,
-        error: null,
-        user,
-        isSelf,
-      };
+      if (isSelf) {
+        const { likes, error: Lerror } = await this.likeService.findAllByUserId(
+          currentUser.id,
+        );
+        if (Lerror) throw new Error(error.message);
+        const {
+          applications,
+          error: Aerror,
+        } = await this.applicationService.findAllByUserId(currentUser.id);
+        if (Aerror) throw new Error(error.message);
+        return {
+          ok: true,
+          error: null,
+          user,
+          isSelf,
+          likes,
+          applications,
+        };
+      } else {
+        return {
+          ok: true,
+          error: null,
+          user,
+          isSelf,
+        };
+      }
     } catch (error) {
       return {
         ok: false,

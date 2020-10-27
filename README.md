@@ -33,7 +33,7 @@
 
 - [x] signUp // 10월 16일
 - [x] signIn // 10월 16일
-- [x] getProfile(+isSelf) // 10월 16일
+- [x] getProfile(+isSelf) // 10월 16일 //10월 27일
 - [ ] editAvatar
   
 ### Post
@@ -45,19 +45,16 @@
 - [x] toggleOpenAndClose // 10월 19일
 - [x] completePost // 10월 20일
 - [x] deletePost // 10월 19일
-- [x] getMyPosts // 10월 19일
 
 ### Application
 
 - [x] applyForPost // 10월 20일
 - [x] handleApplication // 10월 21일
 - [x] cancelApplication  // 10월 20일
-- [x] getMyApplications // 10월 21일
 
 ### Like
 
 - [x] toggleLike // 10월 20일
-- [x] getLikes // 10월 21일
 
 ### Question
 
@@ -69,5 +66,3 @@
 - [x] createAnswer // 10월 20일
 
 ### Certificate
-
-- [x] getMyCertificates // 10월 21일

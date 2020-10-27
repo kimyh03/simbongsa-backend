@@ -17,11 +17,20 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async findOneById(userId: number) {
+  async findOneById(userId: number, relations?: string[]) {
     try {
-      const user = await this.userRepository.findOne(userId);
-      if (!user) throw new NotFoundException();
-      return { user, error: null };
+      if (relations) {
+        const user = await this.userRepository.findOne({
+          where: { id: userId },
+          relations: [...relations],
+        });
+        if (!user) throw new NotFoundException();
+        return { user, error: null };
+      } else {
+        const user = await this.userRepository.findOne(userId);
+        if (!user) throw new NotFoundException();
+        return { user, error: null };
+      }
     } catch (error) {
       return { user: null, error: error.message };
     }
