@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { GetMeOutput } from './dto/GetMe.dto';
 import { getProfileInput, GetProfileOutput } from './dto/GetProfile.dto';
 import { SignInInput, SignInOutput } from './dto/SignIn.dto';
 import { SignUpInput, SignUpOutput } from './dto/SignUp.dto';
@@ -65,6 +66,29 @@ export class UserResolver {
         error: null,
         user,
         isSelf,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+        user: null,
+      };
+    }
+  }
+
+  @Query(() => GetMeOutput)
+  async getMe(
+    @CurrentUser('currentUser') currentUser: User,
+  ): Promise<GetMeOutput> {
+    try {
+      const { user, error } = await this.userService.findOneById(
+        currentUser.id,
+      );
+      if (error) throw new Error(error);
+      return {
+        ok: true,
+        error: null,
+        user,
       };
     } catch (error) {
       return {

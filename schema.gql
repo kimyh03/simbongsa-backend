@@ -108,6 +108,12 @@ type User {
   certificates: [Certificate!]
 }
 
+type GetMeOutput {
+  ok: Boolean!
+  error: String
+  user: User
+}
+
 type GetProfileOutput {
   ok: Boolean!
   error: String
@@ -230,6 +236,7 @@ type GetMyCertificatesOutput {
 
 type Query {
   getProfile(args: getProfileInput!): GetProfileOutput!
+  getMe: GetMeOutput!
   getPostDetail(args: GetPostDetailInput!): GetPostDetailOutput!
   getMyPosts: GetMyPostsOutput!
   getPosts(args: GetPostsInput!): GetPostsOutput!
