@@ -1,5 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Application } from 'src/application/application.entity';
 import { CommonOutput } from 'src/common/dto/CommonOutput';
+import { Question } from 'src/question/question.entity';
 import { Post } from '../post.entity';
 
 @InputType()
@@ -12,6 +14,12 @@ export class GetPostDetailInput {
 export class GetPostDetailOutput extends CommonOutput {
   @Field({ nullable: true })
   post?: Post;
+
+  @Field(() => [Question], { nullable: true })
+  questions?: Question[];
+
+  @Field(() => [Application], { nullable: true })
+  applications?: Application[];
 
   // 본인이 작성한 모집공고 여부(client에서 사용, true시 모집공고 수정 및 삭제 버튼 등 추가 )
   @Field({ defaultValue: false })

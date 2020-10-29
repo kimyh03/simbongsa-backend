@@ -5,6 +5,7 @@ import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { CertificateService } from 'src/certificate/certificate.service';
 import { LikeService } from 'src/like/like.service';
+import { QuestionService } from 'src/question/question.service';
 import { User } from 'src/user/user.entity';
 import { CompletePostInput, CompletePostOutput } from './dto/CompletePost.dto';
 import { CreatePostInput, CreatePostOutput } from './dto/CreatePost.dto';
@@ -29,6 +30,7 @@ export class PostResolver {
     private readonly likes: LikeService,
     private readonly applicatoins: ApplicationService,
     private readonly certificates: CertificateService,
+    private readonly questionService: QuestionService,
   ) {}
 
   @UseGuards(LogInOnly)
@@ -72,8 +74,20 @@ export class PostResolver {
     try {
       let isMine, isLiked, isApplied;
       const { postId } = args;
-      const { error, post } = await this.postService.findOneById(postId);
-      if (error) throw new Error(error.message);
+      const { error, post } = await this.postService.findOneById(postId, [
+        'user',
+      ]);
+      if (error) throw new Error(error);
+      const {
+        error: QError,
+        questions,
+      } = await this.questionService.findAllByPostId(postId);
+      if (QError) throw new Error(QError);
+      const {
+        applications,
+        error: AError,
+      } = await this.applicatoins.findAllByPostId(postId);
+      if (AError) throw new Error(AError);
       if (user) {
         if (post.userId === user.id) isMine = true;
         const { like } = await this.likes.findOneByIds(user.id, postId);
@@ -84,7 +98,16 @@ export class PostResolver {
         );
         if (application) isApplied = true;
       }
-      return { ok: true, error: null, post, isMine, isLiked, isApplied };
+      return {
+        ok: true,
+        error: null,
+        post,
+        isMine,
+        isLiked,
+        isApplied,
+        questions,
+        applications,
+      };
     } catch (error) {
       return { ok: false, error: error.message, post: null };
     }

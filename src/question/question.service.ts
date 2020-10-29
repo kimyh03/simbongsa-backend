@@ -61,4 +61,16 @@ export class QuestionService {
       return { question: null, error: error.message, hostId: null };
     }
   }
+
+  async findAllByPostId(postId: number) {
+    try {
+      const questions = await this.questionRepository.find({
+        where: { postId },
+        relations: ['answer', 'user'],
+      });
+      return { questions, error: null };
+    } catch (error) {
+      return { questions: null, error: error.message };
+    }
+  }
 }
