@@ -167,6 +167,8 @@ type GetPostDetailOutput {
   ok: Boolean!
   error: String
   post: Post
+  questions: [Question!]
+  applications: [Application!]
   isMine: Boolean!
   isLiked: Boolean!
   isApplied: Boolean!
@@ -185,16 +187,6 @@ type ToggleOpenAndCloseOutput {
   error: String
 }
 
-type ApplyForPostOutput {
-  ok: Boolean!
-  error: String
-}
-
-type CalcelApplicationOutput {
-  ok: Boolean!
-  error: String
-}
-
 type GetMyApplicationsOutput {
   ok: Boolean!
   error: String
@@ -202,6 +194,11 @@ type GetMyApplicationsOutput {
 }
 
 type HandleApplicationOutput {
+  ok: Boolean!
+  error: String
+}
+
+type ToggleApplyOutput {
   ok: Boolean!
   error: String
 }
@@ -273,9 +270,8 @@ type Mutation {
   toggleOpenAndClose(args: ToggleOpenAndCloseInput!): ToggleOpenAndCloseOutput!
   deletePost(args: DeletePostInput!): DeletePostOutput!
   completePost(args: CompletePostInput!): CompletePostOutput!
-  applyForPost(args: ApplyForPostInput!): ApplyForPostOutput!
+  toggleApply(args: ToggleApplyInput!): ToggleApplyOutput!
   handleApplication(args: HandleApplicationInput!): HandleApplicationOutput!
-  cancelApplication(args: CancelApplicationInput!): CalcelApplicationOutput!
   toggleLike(args: ToggleLikeInput!): ToggleLikeOutput!
   createQuestion(args: CreateQuestionInput!): CreateQuestionOuput!
   deleteQuestion(args: DeleteQuestionInput!): DeleteQuestionOutput!
@@ -330,17 +326,13 @@ input CompletePostInput {
   postId: Float!
 }
 
-input ApplyForPostInput {
+input ToggleApplyInput {
   postId: Float!
 }
 
 input HandleApplicationInput {
   applicationId: Float!
   status: String!
-}
-
-input CancelApplicationInput {
-  postId: Float!
 }
 
 input ToggleLikeInput {

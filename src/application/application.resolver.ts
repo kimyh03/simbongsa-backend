@@ -11,16 +11,12 @@ import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { User } from 'src/user/user.entity';
 import { ApplicationService } from './application.service';
 import { applicationStatus } from './dto/ApplicationStatus.enum';
-import { ApplyForPostInput, ApplyForPostOutput } from './dto/ApplyForPost.dto';
-import {
-  CalcelApplicationOutput,
-  CancelApplicationInput,
-} from './dto/CancelApplication.dto';
 import { GetMyApplicationsOutput } from './dto/GetMyApplications.dto';
 import {
   HandleApplicationInput,
   HandleApplicationOutput,
 } from './dto/HandleApplication.dto';
+import { ToggleApplyInput, ToggleApplyOutput } from './dto/ToggleApply.dto';
 
 registerEnumType(applicationStatus, { name: 'applicationStatus' });
 
@@ -29,18 +25,31 @@ export class ApplicationResolver {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @UseGuards(LogInOnly)
-  @Mutation(() => ApplyForPostOutput)
-  async applyForPost(
+  @Mutation(() => ToggleApplyOutput)
+  async toggleApply(
     @CurrentUser('currentUser') currentUser: User,
-    @Args('args') args: ApplyForPostInput,
-  ): Promise<ApplyForPostOutput> {
+    @Args('args') args: ToggleApplyInput,
+  ): Promise<ToggleApplyOutput> {
     try {
       const { postId } = args;
-      const { error } = await this.applicationService.create(
-        currentUser.id,
-        postId,
-      );
-      if (error) throw new Error(error.message);
+      const {
+        application: exist,
+        error,
+      } = await this.applicationService.findOneByIds(currentUser.id, postId);
+      if (error) throw new Error(error);
+      if (exist) {
+        const { error: DError } = await this.applicationService.deleteByIds(
+          currentUser.id,
+          postId,
+        );
+        if (DError) throw new Error(DError);
+      } else {
+        const { error: CError } = await this.applicationService.create(
+          currentUser.id,
+          postId,
+        );
+        if (CError) throw new Error(CError);
+      }
       return {
         ok: true,
         error: null,
@@ -64,31 +73,6 @@ export class ApplicationResolver {
       const { error } = await this.applicationService.setStatus(
         status,
         applicationId,
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
-      return {
-        ok: true,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: error.message,
-      };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Mutation(() => CalcelApplicationOutput)
-  async cancelApplication(
-    @CurrentUser() currentUser: User,
-    @Args('args') args: CancelApplicationInput,
-  ): Promise<CalcelApplicationOutput> {
-    try {
-      const { postId } = args;
-      const { error } = await this.applicationService.deleteByPostId(
-        postId,
         currentUser.id,
       );
       if (error) throw new Error(error.message);

@@ -48,9 +48,8 @@
 
 ### Application
 
-- [x] applyForPost // 10월 20일
+- [x] toggleApply // 10월 29일(apply, cancel 통합)
 - [x] handleApplication // 10월 21일
-- [x] cancelApplication  // 10월 20일
 
 ### Like
 

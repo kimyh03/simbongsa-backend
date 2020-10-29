@@ -49,8 +49,8 @@ export class ApplicationService {
       const { post, error: pError } = await this.postService.findOneById(
         postId,
       );
-      if (uError) throw new Error(uError.message);
-      if (pError) throw new Error(pError.message);
+      if (uError) throw new Error(uError);
+      if (pError) throw new Error(pError);
       if (post.isCompleted === true || post.isOpened === false)
         throw new Error('모집이 마감 되었습니다.');
       const newApplication = this.applicationRepository.create({
@@ -87,7 +87,7 @@ export class ApplicationService {
     }
   }
 
-  async deleteByPostId(postId: number, userId: number) {
+  async deleteByIds(userId: number, postId: number) {
     try {
       const application = await this.applicationRepository.findOne({
         where: { postId, userId },
@@ -124,6 +124,18 @@ export class ApplicationService {
         relations: ['post'],
       });
       if (!applications) throw new NotFoundException();
+      return { applications, error: null };
+    } catch (error) {
+      return { applications: null, error: error.message };
+    }
+  }
+
+  async findAllByPostId(postId: number) {
+    try {
+      const applications = await this.applicationRepository.find({
+        where: { postId },
+        relations: ['user'],
+      });
       return { applications, error: null };
     } catch (error) {
       return { applications: null, error: error.message };
