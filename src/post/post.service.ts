@@ -105,66 +105,66 @@ export class PostService {
     searchTerm,
   }: GetPostsInput) {
     try {
-      const OFFSET = (page - 1) * 10;
-      if (searchTerm) {
-        const posts = await this.postRepository
-          .createQueryBuilder('post')
-          .andWhere('post.isOpened =:openOnly', { openOnly })
-          .andWhere('post.category IN (:...categories)', { categories })
-          .andWhere('post.rigion IN (:...rigions)', { rigions })
-          .andWhere(
-            new Brackets(qb => {
-              qb.where('post.title LIKE :title', {
-                title: `%${searchTerm}%`,
-              }).orWhere('post.description like :description', {
-                description: `%${searchTerm}%`,
-              });
-            }),
-          )
-          .orderBy('post.id', 'DESC')
-          .take(10)
-          .offset(OFFSET)
-          .getMany();
-        const totalCount = await this.postRepository
-          .createQueryBuilder('post')
-          .andWhere('post.isOpened =:openOnly', { openOnly })
-          .andWhere('post.category IN (:...categories)', { categories })
-          .andWhere('post.rigion IN (:...rigions)', { rigions })
-          .andWhere(
-            new Brackets(qb => {
-              qb.where('post.title LIKE :title', {
-                title: `%${searchTerm}%`,
-              }).orWhere('post.description like :description', {
-                description: `%${searchTerm}%`,
-              });
-            }),
-          )
-          .orderBy('post.id', 'DESC')
-          .getCount();
+      const LIMIT = 10;
+      const OFFSET = (page - 1) * LIMIT;
+      const baseQuery = this.postRepository
+        .createQueryBuilder('post')
+        .andWhere('post.isOpened =:openOnly', { openOnly })
+        .orderBy('post.id', 'DESC')
+        .limit(LIMIT)
+        .offset(OFFSET);
+      const serchQuery = baseQuery.andWhere(
+        new Brackets(qb => {
+          qb.where('post.title LIKE :title', {
+            title: `%${searchTerm}%`,
+          }).orWhere('post.description like :description', {
+            description: `%${searchTerm}%`,
+          });
+        }),
+      );
+      let query;
+      const makeResponse = async query => {
+        const [posts, totalCount] = await query.getManyAndCount();
         const totalPage = Math.ceil(totalCount / 10);
-        return { error: null, posts, totalCount, totalPage };
+        return { posts, totalCount, totalPage };
+      };
+      if (!searchTerm) {
+        if (categories.length === 0 && rigions.length === 0) {
+          query = baseQuery;
+        } else if (categories && rigions.length === 0) {
+          query = baseQuery.andWhere('post.category IN (:...categories)', {
+            categories,
+          });
+        } else if (categories.length === 0 && rigions) {
+          query = baseQuery.andWhere('post.rigion IN (:...rigions)', {
+            rigions,
+          });
+        } else {
+          query = baseQuery
+            .andWhere('post.category IN (:...categories)', { categories })
+            .andWhere('post.rigion IN (:...rigions)', { rigions });
+        }
       } else {
-        const posts = await this.postRepository
-          .createQueryBuilder('post')
-          .andWhere('post.isOpened =:openOnly', { openOnly })
-          .andWhere('post.category IN (:...categories)', { categories })
-          .andWhere('post.rigion IN (:...rigions)', { rigions })
-          .orderBy('post.id', 'DESC')
-          .take(10)
-          .offset(OFFSET)
-          .getMany();
-        const totalCount = await this.postRepository
-          .createQueryBuilder('post')
-          .andWhere('post.isOpened =:openOnly', { openOnly })
-          .andWhere('post.category IN (:...categories)', { categories })
-          .andWhere('post.rigion IN (:...rigions)', { rigions })
-          .orderBy('post.id', 'DESC')
-          .getCount();
-        const totalPage = Math.ceil(totalCount / 10);
-        return { error: null, posts, totalCount, totalPage };
+        if (categories.length === 0 && rigions.length === 0) {
+          query = serchQuery;
+        } else if (categories || rigions.length === 0) {
+          query = serchQuery.andWhere('post.category IN (:...categories)', {
+            categories,
+          });
+        } else if (categories.length === 0 && rigions) {
+          query = serchQuery.andWhere('post.rigion IN (:...rigions)', {
+            rigions,
+          });
+        } else {
+          query = serchQuery
+            .andWhere('post.category IN (:...categories)', { categories })
+            .andWhere('post.rigion IN (:...rigions)', { rigions });
+        }
       }
+      const { posts, totalCount, totalPage } = await makeResponse(query);
+      return { posts, totalCount, totalPage };
     } catch (error) {
-      return { error: error.message };
+      return { error };
     }
   }
 

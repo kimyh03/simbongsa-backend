@@ -6,35 +6,16 @@ import { postRigionEnum } from './postRigion.enum';
 
 @InputType()
 export class GetPostsInput {
-  @Field(() => [postCategoryEnum], {
-    defaultValue: [
-      postCategoryEnum.communityService,
-      postCategoryEnum.environment,
-      postCategoryEnum.eventSupport,
-      postCategoryEnum.ruralAtivity,
-    ],
-    nullable: true,
-  })
+  @Field(() => [postCategoryEnum], { nullable: true })
   categories?: postCategoryEnum[];
 
-  @Field(() => [postRigionEnum], {
-    defaultValue: [
-      postRigionEnum.Seoul,
-      postRigionEnum.Gyeonggi,
-      postRigionEnum.Incheon,
-      postRigionEnum.Chungcheong,
-      postRigionEnum.Gyeongsang,
-      postRigionEnum.Jeolla,
-      postRigionEnum.Jeju,
-    ],
-    nullable: true,
-  })
+  @Field(() => [postRigionEnum], { nullable: true })
   rigions?: postRigionEnum[];
 
   @Field()
   page: number;
 
-  @Field({ nullable: true, defaultValue: true })
+  @Field({ nullable: true })
   openOnly?: boolean;
 
   @Field({ nullable: true })

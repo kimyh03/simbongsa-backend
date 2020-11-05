@@ -255,10 +255,10 @@ input GetPostDetailInput {
 }
 
 input GetPostsInput {
-  categories: [postCategory!] = [communityService, environment, eventSupport, ruralAtivity]
-  rigions: [postRigion!] = [Seoul, Gyeonggi, Incheon, Chungcheong, Gyeongsang, Jeolla, Jeju]
+  categories: [postCategory!]
+  rigions: [postRigion!]
   page: Float!
-  openOnly: Boolean = true
+  openOnly: Boolean
   searchTerm: String
 }
 

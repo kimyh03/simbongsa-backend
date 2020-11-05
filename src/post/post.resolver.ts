@@ -187,7 +187,7 @@ export class PostResolver {
         totalCount,
         totalPage,
       } = await this.postService.findByFilter(args);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(error);
       return {
         ok: true,
         error: null,
