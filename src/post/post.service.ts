@@ -109,7 +109,6 @@ export class PostService {
       const OFFSET = (page - 1) * LIMIT;
       const baseQuery = this.postRepository
         .createQueryBuilder('post')
-        .andWhere('post.isOpened =:openOnly', { openOnly })
         .orderBy('post.id', 'DESC')
         .limit(LIMIT)
         .offset(OFFSET);
@@ -160,6 +159,9 @@ export class PostService {
             .andWhere('post.category IN (:...categories)', { categories })
             .andWhere('post.rigion IN (:...rigions)', { rigions });
         }
+      }
+      if (openOnly) {
+        query = query.andWhere('post.isOpened =:openOnly', { openOnly });
       }
       const { posts, totalCount, totalPage } = await makeResponse(query);
       return { posts, totalCount, totalPage };
