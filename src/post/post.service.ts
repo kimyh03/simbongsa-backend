@@ -147,7 +147,7 @@ export class PostService {
       } else {
         if (categories.length === 0 && rigions.length === 0) {
           query = serchQuery;
-        } else if (categories || rigions.length === 0) {
+        } else if (categories && rigions.length === 0) {
           query = serchQuery.andWhere('post.category IN (:...categories)', {
             categories,
           });
