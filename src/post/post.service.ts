@@ -174,6 +174,7 @@ export class PostService {
     try {
       if (post.userId !== userId) throw new UnauthorizedException();
       post.isCompleted = true;
+      post.isOpened = false;
       await this.postRepository.save(post);
       return { error: null };
     } catch (error) {
