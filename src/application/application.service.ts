@@ -141,4 +141,17 @@ export class ApplicationService {
       return { applications: null, error: error.message };
     }
   }
+
+  async deleteById(applicationId: number) {
+    try {
+      const application = await this.applicationRepository.findOne(
+        applicationId,
+      );
+      if (!application) throw new NotFoundException();
+      await this.applicationRepository.remove(application);
+      return { error: null };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
 }

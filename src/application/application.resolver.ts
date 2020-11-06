@@ -70,12 +70,20 @@ export class ApplicationResolver {
   ): Promise<HandleApplicationOutput> {
     try {
       const { status, applicationId } = args;
-      const { error } = await this.applicationService.setStatus(
-        status,
-        applicationId,
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
+      if (status === applicationStatus.rejected) {
+        const { error } = await this.applicationService.deleteById(
+          applicationId,
+        );
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await this.applicationService.setStatus(
+          status,
+          applicationId,
+          currentUser.id,
+        );
+        if (error) throw new Error(error.message);
+      }
+
       return {
         ok: true,
         error: null,
