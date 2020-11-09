@@ -109,6 +109,7 @@ export class PostService {
       const OFFSET = (page - 1) * LIMIT;
       const baseQuery = this.postRepository
         .createQueryBuilder('post')
+        .leftJoinAndSelect('post.applications', 'applications')
         .orderBy('post.id', 'DESC')
         .limit(LIMIT)
         .offset(OFFSET);
