@@ -110,6 +110,11 @@ type Application {
   postId: Float!
 }
 
+type EditAvatarOutput {
+  ok: Boolean!
+  error: String
+}
+
 type GetMeOutput {
   ok: Boolean!
   error: String
@@ -238,6 +243,7 @@ type GetMyCertificatesOutput {
 type Query {
   getProfile(args: getProfileInput!): GetProfileOutput!
   getMe: GetMeOutput!
+  getAllPosts: [Post!]!
   getPostDetail(args: GetPostDetailInput!): GetPostDetailOutput!
   getMyPosts: GetMyPostsOutput!
   getPosts(args: GetPostsInput!): GetPostsOutput!
@@ -265,6 +271,8 @@ input GetPostsInput {
 type Mutation {
   signUp(args: SignUpInput!): SignUpOutput!
   signIn(args: SignInInput!): SignInOutput!
+  editAvatar(args: EditAvatarInput!): EditAvatarOutput!
+  deletesuper(postId: Float!): Boolean!
   createPost(args: CreatePostInput!): CreatePostOutput!
   editPost(args: EditPostInput!): EditPostOutput!
   toggleOpenAndClose(args: ToggleOpenAndCloseInput!): ToggleOpenAndCloseOutput!
@@ -287,6 +295,10 @@ input SignUpInput {
 input SignInInput {
   email: String!
   password: String!
+}
+
+input EditAvatarInput {
+  avatarKey: String!
 }
 
 input CreatePostInput {

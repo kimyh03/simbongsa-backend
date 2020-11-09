@@ -13,10 +13,11 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file) {
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 2000000 } }))
+  async uploadFile(@UploadedFile() file) {
     try {
-      return file;
+      const data = await this.uploadService.upload(file);
+      return data;
     } catch (error) {
       console.log(error);
     }

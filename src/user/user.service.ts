@@ -86,4 +86,15 @@ export class UserService {
       };
     }
   }
+
+  async editAvatar(userId: number, avatarUrl: string) {
+    try {
+      const user = await this.userRepository.findOne(userId);
+      user.avatar = avatarUrl;
+      await this.userRepository.save(user);
+      return { error: null };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
 }

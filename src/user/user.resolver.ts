@@ -1,7 +1,10 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
+import { LogInOnly } from 'src/auth/logInOnly.guard';
 import { LikeService } from 'src/like/like.service';
+import { EditAvatarInput, EditAvatarOutput } from './dto/EditAvatar.dto';
 import { GetMeOutput } from './dto/GetMe.dto';
 import { getProfileInput, GetProfileOutput } from './dto/GetProfile.dto';
 import { SignInInput, SignInOutput } from './dto/SignIn.dto';
@@ -130,6 +133,32 @@ export class UserResolver {
         ok: false,
         error: error.message,
         user: null,
+      };
+    }
+  }
+
+  @UseGuards(LogInOnly)
+  @Mutation(() => EditAvatarOutput)
+  async editAvatar(
+    @CurrentUser('currentUser') CurrentUser: User,
+    @Args('args') args: EditAvatarInput,
+  ): Promise<EditAvatarOutput> {
+    const { avatarKey } = args;
+    const avatarUrl = `https://simbongsa1365.s3.ap-northeast-2.amazonaws.com/${avatarKey}`;
+    const { error } = await this.userService.editAvatar(
+      CurrentUser.id,
+      avatarUrl,
+    );
+    if (error) throw new Error(error);
+    try {
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
       };
     }
   }
