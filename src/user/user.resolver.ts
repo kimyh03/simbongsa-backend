@@ -5,6 +5,7 @@ import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
 import notFound from 'src/common/exceptions/notFound';
 import { LikeService } from 'src/like/like.service';
+import { S3Service } from 'src/S3/S3.service';
 import { EditAvatarInput, EditAvatarOutput } from './dto/EditAvatar.dto';
 import { GetMeOutput } from './dto/GetMe.dto';
 import { getProfileInput, GetProfileOutput } from './dto/GetProfile.dto';
@@ -19,6 +20,7 @@ export class UserResolver {
     private readonly userService: UserService,
     private readonly likeService: LikeService,
     private readonly applicationService: ApplicationService,
+    private readonly s3Service: S3Service,
   ) {}
 
   @Mutation(() => SignUpOutput)
@@ -138,6 +140,9 @@ export class UserResolver {
     const avatarUrl = `https://simbongsa1365.s3.ap-northeast-2.amazonaws.com/${avatarKey}`;
     const user = await this.userService.findOneById(CurrentUser.id);
     await notFound(user);
+    if (user.avatar) {
+      await this.s3Service.delete(user.avatar.split('avatar')[1]);
+    }
     await this.userService.editAvatar(user, avatarUrl);
     try {
       return { ok: true };

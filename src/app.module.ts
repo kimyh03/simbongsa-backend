@@ -24,7 +24,7 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 import { CertificateModule } from './certificate/certificate.module';
 import { Certificate } from './certificate/certificate.entity';
-import { UploadModule } from './upload/upload.module';
+import { S3Module } from './S3/S3.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,7 +61,7 @@ import { UploadModule } from './upload/upload.module';
     QuestionModule,
     AnswerModule,
     CertificateModule,
-    UploadModule,
+    S3Module,
   ],
 })
 export class AppModule implements NestModule {

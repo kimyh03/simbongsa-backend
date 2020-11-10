@@ -7,6 +7,7 @@ import { Like } from 'src/like/like.entity';
 import { LikeService } from 'src/like/like.service';
 import { Post } from 'src/post/post.entity';
 import { PostService } from 'src/post/post.service';
+import { S3Service } from 'src/S3/S3.service';
 import { User } from './user.entity';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
@@ -20,6 +21,7 @@ import { UserService } from './user.service';
     LikeService,
     ApplicationService,
     PostService,
+    S3Service,
   ],
   exports: [UserService],
 })
