@@ -1,11 +1,9 @@
-import {
-  NotFoundException,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, registerEnumType, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import notFound from 'src/common/exceptions/notFound';
+import notMatch from 'src/common/exceptions/notMatch';
 import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
 import { ApplicationService } from './application.service';
@@ -41,7 +39,7 @@ export class ApplicationResolver {
         await this.applicationService.delete(existApplication);
       } else {
         const post = await this.postService.findOneById(postId);
-        if (!post) throw new NotFoundException();
+        await notFound(post);
         if (post.isCompleted === true || post.isOpened === false) {
           throw new Error('모집이 마감 되었습니다.');
         }
@@ -70,10 +68,10 @@ export class ApplicationResolver {
       const application = await this.applicationService.findOneById(
         applicationId,
       );
-      if (!application) throw new NotFoundException();
+      await notFound(application);
       const post = await this.postService.findOneById(application.postId);
-      if (!post) throw new NotFoundException();
-      if (post.userId !== currentUser.id) throw new UnauthorizedException();
+      await notFound(post);
+      await notMatch(post.userId, currentUser.id);
       if (status === applicationStatus.rejected) {
         await this.applicationService.delete(application);
       } else {

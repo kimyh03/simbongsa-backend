@@ -1,7 +1,8 @@
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import notFound from 'src/common/exceptions/notFound';
 import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
 import {
@@ -26,7 +27,7 @@ export class QuestionResolver {
     try {
       const { postId, text } = args;
       const post = await this.postService.findOneById(postId);
-      if (!post) throw new NotFoundException();
+      await notFound(post);
       await this.questionService.create(text, post, currentUser);
       return {
         ok: true,

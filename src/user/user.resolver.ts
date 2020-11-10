@@ -1,8 +1,9 @@
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import notFound from 'src/common/exceptions/notFound';
 import { LikeService } from 'src/like/like.service';
 import { EditAvatarInput, EditAvatarOutput } from './dto/EditAvatar.dto';
 import { GetMeOutput } from './dto/GetMe.dto';
@@ -68,7 +69,7 @@ export class UserResolver {
         'posts',
         'certificates',
       ]);
-      if (!user) throw new NotFoundException();
+      await notFound(user);
       user.activityCount = user.certificates?.length;
       let container = 0;
       for (let i = 0; i < user.activityCount; i++) {
@@ -115,7 +116,7 @@ export class UserResolver {
   ): Promise<GetMeOutput> {
     try {
       const user = await this.userService.findOneById(currentUser.id);
-      if (!user) throw new NotFoundException();
+      await notFound(user);
       return {
         ok: true,
         error: null,
@@ -139,7 +140,7 @@ export class UserResolver {
     const { avatarKey } = args;
     const avatarUrl = `https://simbongsa1365.s3.ap-northeast-2.amazonaws.com/${avatarKey}`;
     const user = await this.userService.findOneById(CurrentUser.id);
-    if (!user) new NotFoundException();
+    await notFound(user);
     await this.userService.editAvatar(user, avatarUrl);
     try {
       return {
