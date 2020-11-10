@@ -15,7 +15,7 @@ export class AssignUserMiddleware implements NestMiddleware {
       try {
         const payload = this.authService.verify(token);
         if (payload.hasOwnProperty('id')) {
-          const { user } = await this.userService.findOneById(payload['id']);
+          const user = await this.userService.findOneById(payload['id']);
           req.user = user;
         }
       } catch (error) {

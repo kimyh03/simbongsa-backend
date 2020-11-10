@@ -1,4 +1,8 @@
-import { UseGuards } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
@@ -10,8 +14,6 @@ import { User } from 'src/user/user.entity';
 import { CompletePostInput, CompletePostOutput } from './dto/CompletePost.dto';
 import { CreatePostInput, CreatePostOutput } from './dto/CreatePost.dto';
 import { DeletePostInput, DeletePostOutput } from './dto/DeletePost.dto';
-import { EditPostInput, EditPostOutput } from './dto/EditPost.dto';
-import { GetMyPostsOutput } from './dto/GetMyPosts.dto';
 import {
   GetPostDetailInput,
   GetPostDetailOutput,
@@ -40,26 +42,7 @@ export class PostResolver {
     @Args('args') args: CreatePostInput,
   ): Promise<CreatePostOutput> {
     try {
-      const { error } = await this.postService.createPost(currentUser.id, args);
-      if (error) {
-        throw Error(error.message);
-      } else {
-        return { ok: true, error: null };
-      }
-    } catch (error) {
-      return { ok: false, error: error.message };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Mutation(() => EditPostOutput)
-  async editPost(
-    @CurrentUser('currentUser') currentUser: User,
-    @Args('args') args: EditPostInput,
-  ): Promise<EditPostOutput> {
-    try {
-      const { error } = await this.postService.editPost(currentUser.id, args);
-      if (error) throw new Error(error.message);
+      await this.postService.createPost(currentUser, args);
       return { ok: true, error: null };
     } catch (error) {
       return { ok: false, error: error.message };
@@ -74,33 +57,26 @@ export class PostResolver {
     try {
       let isMine, isLiked, isApplied;
       const { postId } = args;
-      const { error, post } = await this.postService.findOneById(postId, [
+      const post = await this.postService.findOneById(postId, ['user']);
+      const questions = await this.questionService.findAllByPostId(postId, [
+        'answer',
         'user',
       ]);
-      if (error) throw new Error(error);
-      const {
-        error: QError,
-        questions,
-      } = await this.questionService.findAllByPostId(postId);
-      if (QError) throw new Error(QError);
-      const {
-        applications,
-        error: AError,
-      } = await this.applicatoins.findAllByPostId(postId);
-      if (AError) throw new Error(AError);
+      const applications = await this.applicatoins.findAllByPostId(postId, [
+        'user',
+      ]);
       if (user) {
         if (post.userId === user.id) isMine = true;
-        const { like } = await this.likes.findOneByIds(user.id, postId);
-        if (like) isLiked = true;
-        const { application } = await this.applicatoins.findOneByIds(
+        const existLike = await this.likes.findOneByIds(user.id, postId);
+        if (existLike) isLiked = true;
+        const existApplication = await this.applicatoins.findOneByIds(
           user.id,
           postId,
         );
-        if (application) isApplied = true;
+        if (existApplication) isApplied = true;
       }
       return {
         ok: true,
-        error: null,
         post,
         isMine,
         isLiked,
@@ -121,38 +97,13 @@ export class PostResolver {
   ): Promise<ToggleOpenAndCloseOutput> {
     try {
       const { postId } = args;
-      const { error } = await this.postService.toggleOpenAndClose(
-        currentUser.id,
-        postId,
-      );
-      if (error) throw new Error(error.message);
-      return { ok: true, error: null };
+      const post = await this.postService.findOneById(postId);
+      if (!post) throw new NotFoundException();
+      if (post.userId !== currentUser.id) throw new UnauthorizedException();
+      await this.postService.toggleOpenAndClose(post);
+      return { ok: true };
     } catch (error) {
       return { ok: false, error: error.message };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Query(() => GetMyPostsOutput)
-  async getMyPosts(
-    @CurrentUser('currentUser') currentUser: User,
-  ): Promise<GetMyPostsOutput> {
-    try {
-      const { posts, error } = await this.postService.findAllByUserId(
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
-      return {
-        ok: true,
-        error: null,
-        posts,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: error.message,
-        posts: null,
-      };
     }
   }
 
@@ -164,8 +115,10 @@ export class PostResolver {
   ): Promise<DeletePostOutput> {
     try {
       const { postId } = args;
-      const { error } = await this.postService.delete(currentUser.id, postId);
-      if (error) throw new Error(error.message);
+      const post = await this.postService.findOneById(postId);
+      if (!post) throw new NotFoundException();
+      if (post.userId !== currentUser.id) throw new UnauthorizedException();
+      await this.postService.delete(post);
       return {
         ok: true,
         error: null,
@@ -182,12 +135,10 @@ export class PostResolver {
   async getPosts(@Args('args') args: GetPostsInput): Promise<GetPostsOutput> {
     try {
       const {
-        error,
         posts,
         totalCount,
         totalPage,
       } = await this.postService.findByFilter(args);
-      if (error) throw new Error(error);
       return {
         ok: true,
         error: null,
@@ -211,25 +162,12 @@ export class PostResolver {
   ): Promise<CompletePostOutput> {
     try {
       const { postId } = args;
-      const { post, error } = await this.postService.findOneById(postId, [
-        'applications',
-      ]);
-      if (error) throw new Error(error.message);
-      const { error: PError } = await this.postService.setIsCompleteTrue(
-        post,
-        currentUser.id,
-      );
-      if (PError) throw new Error(PError.message);
-      const { error: CError } = await this.certificates.create(
-        post,
-        currentUser.id,
-      );
-      if (CError) throw new Error(CError.message);
-      const { error: AError } = await this.applicatoins.deleteAllOfPost(
-        post,
-        currentUser.id,
-      );
-      if (AError) throw new Error(AError.message);
+      const post = await this.postService.findOneById(postId, ['applications']);
+      if (!post) throw new NotFoundException();
+      if (post.userId !== currentUser.id) throw new UnauthorizedException();
+      await this.postService.setIsCompleteTrue(post);
+      await this.certificates.create(post, post.applications);
+      await this.applicatoins.deleteAll(post.applications);
       return {
         ok: true,
         error: null,

@@ -1,21 +1,21 @@
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
 import {
   CreateQuestionInput,
   CreateQuestionOuput,
 } from './dto/CreateQuestion.dto';
-import {
-  DeleteQuestionInput,
-  DeleteQuestionOutput,
-} from './dto/DeleteQuestion.dto';
 import { QuestionService } from './question.service';
 
 @Resolver()
 export class QuestionResolver {
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(
+    private readonly questionService: QuestionService,
+    private readonly postService: PostService,
+  ) {}
 
   @UseGuards(LogInOnly)
   @Mutation(() => CreateQuestionOuput)
@@ -25,37 +25,9 @@ export class QuestionResolver {
   ): Promise<CreateQuestionOuput> {
     try {
       const { postId, text } = args;
-      const { error } = await this.questionService.create(
-        text,
-        postId,
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
-      return {
-        ok: true,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: error.message,
-      };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Mutation(() => DeleteQuestionOutput)
-  async deleteQuestion(
-    @CurrentUser() currentUser: User,
-    @Args('args') args: DeleteQuestionInput,
-  ): Promise<DeleteQuestionOutput> {
-    try {
-      const { questionId } = args;
-      const { error } = await this.questionService.delete(
-        questionId,
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
+      const post = await this.postService.findOneById(postId);
+      if (!post) throw new NotFoundException();
+      await this.questionService.create(text, post, currentUser);
       return {
         ok: true,
         error: null,

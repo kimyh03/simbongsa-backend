@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ApplicationService } from 'src/application/application.service';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
@@ -23,15 +23,16 @@ export class UserResolver {
   @Mutation(() => SignUpOutput)
   async signUp(@Args('args') args: SignUpInput): Promise<SignUpOutput> {
     try {
-      const { error, token } = await this.userService.createUser(args);
-      if (error) {
-        throw Error(error.message);
-      } else {
-        return {
-          ok: true,
-          token,
-        };
-      }
+      const existUser = await this.userService.findOneByInfomation(
+        args.email,
+        args.username,
+      );
+      if (existUser) throw new Error('이미 등록된 정보 입니다.');
+      const token = await this.userService.createUser(args);
+      return {
+        ok: true,
+        token,
+      };
     } catch (error) {
       return {
         ok: false,
@@ -43,15 +44,11 @@ export class UserResolver {
   @Mutation(() => SignInOutput)
   async signIn(@Args('args') args: SignInInput): Promise<SignInOutput> {
     try {
-      const { token, error } = await this.userService.verifyUser(args);
-      if (error) {
-        throw Error(error);
-      } else {
-        return {
-          ok: true,
-          token,
-        };
-      }
+      const token = await this.userService.verifyUser(args);
+      return {
+        ok: true,
+        token,
+      };
     } catch (error) {
       return {
         ok: false,
@@ -67,11 +64,11 @@ export class UserResolver {
   ): Promise<GetProfileOutput> {
     try {
       const { userId } = args;
-      const { user, error } = await this.userService.findOneById(userId, [
+      const user = await this.userService.findOneById(userId, [
         'posts',
         'certificates',
       ]);
-      if (error) throw new Error(error.message);
+      if (!user) throw new NotFoundException();
       user.activityCount = user.certificates?.length;
       let container = 0;
       for (let i = 0; i < user.activityCount; i++) {
@@ -80,15 +77,13 @@ export class UserResolver {
       user.activityTime = container;
       const isSelf = currentUser.id === userId;
       if (isSelf) {
-        const { likes, error: Lerror } = await this.likeService.findAllByUserId(
+        const likes = await this.likeService.findAllByUserId(currentUser.id, [
+          'post',
+        ]);
+        const applications = await this.applicationService.findAllByUserId(
           currentUser.id,
+          ['post'],
         );
-        if (Lerror) throw new Error(error.message);
-        const {
-          applications,
-          error: Aerror,
-        } = await this.applicationService.findAllByUserId(currentUser.id);
-        if (Aerror) throw new Error(error.message);
         return {
           ok: true,
           error: null,
@@ -119,10 +114,8 @@ export class UserResolver {
     @CurrentUser('currentUser') currentUser: User,
   ): Promise<GetMeOutput> {
     try {
-      const { user, error } = await this.userService.findOneById(
-        currentUser.id,
-      );
-      if (error) throw new Error(error);
+      const user = await this.userService.findOneById(currentUser.id);
+      if (!user) throw new NotFoundException();
       return {
         ok: true,
         error: null,
@@ -145,11 +138,9 @@ export class UserResolver {
   ): Promise<EditAvatarOutput> {
     const { avatarKey } = args;
     const avatarUrl = `https://simbongsa1365.s3.ap-northeast-2.amazonaws.com/${avatarKey}`;
-    const { error } = await this.userService.editAvatar(
-      CurrentUser.id,
-      avatarUrl,
-    );
-    if (error) throw new Error(error);
+    const user = await this.userService.findOneById(CurrentUser.id);
+    if (!user) new NotFoundException();
+    await this.userService.editAvatar(user, avatarUrl);
     try {
       return {
         ok: true,

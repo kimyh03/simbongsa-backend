@@ -157,17 +157,6 @@ type DeletePostOutput {
   error: String
 }
 
-type EditPostOutput {
-  ok: Boolean!
-  error: String
-}
-
-type GetMyPostsOutput {
-  ok: Boolean!
-  error: String
-  posts: [Post!]
-}
-
 type GetPostDetailOutput {
   ok: Boolean!
   error: String
@@ -192,12 +181,6 @@ type ToggleOpenAndCloseOutput {
   error: String
 }
 
-type GetMyApplicationsOutput {
-  ok: Boolean!
-  error: String
-  applications: [Application!]
-}
-
 type HandleApplicationOutput {
   ok: Boolean!
   error: String
@@ -206,12 +189,6 @@ type HandleApplicationOutput {
 type ToggleApplyOutput {
   ok: Boolean!
   error: String
-}
-
-type GetMyLikesOutput {
-  ok: Boolean!
-  error: String
-  likes: [Like!]
 }
 
 type ToggleLikeOutput {
@@ -224,32 +201,16 @@ type CreateQuestionOuput {
   error: String
 }
 
-type DeleteQuestionOutput {
-  ok: Boolean!
-  error: String
-}
-
 type AnswerTheQuestionOutput {
   ok: Boolean!
   error: String
 }
 
-type GetMyCertificatesOutput {
-  ok: Boolean!
-  error: String
-  certificates: [Certificate!]
-}
-
 type Query {
   getProfile(args: getProfileInput!): GetProfileOutput!
   getMe: GetMeOutput!
-  getAllPosts: [Post!]!
   getPostDetail(args: GetPostDetailInput!): GetPostDetailOutput!
-  getMyPosts: GetMyPostsOutput!
   getPosts(args: GetPostsInput!): GetPostsOutput!
-  getMyApplications: GetMyApplicationsOutput!
-  getMyLikes: GetMyLikesOutput!
-  getMyCertificates: GetMyCertificatesOutput!
 }
 
 input getProfileInput {
@@ -272,9 +233,7 @@ type Mutation {
   signUp(args: SignUpInput!): SignUpOutput!
   signIn(args: SignInInput!): SignInOutput!
   editAvatar(args: EditAvatarInput!): EditAvatarOutput!
-  deletesuper(postId: Float!): Boolean!
   createPost(args: CreatePostInput!): CreatePostOutput!
-  editPost(args: EditPostInput!): EditPostOutput!
   toggleOpenAndClose(args: ToggleOpenAndCloseInput!): ToggleOpenAndCloseOutput!
   deletePost(args: DeletePostInput!): DeletePostOutput!
   completePost(args: CompletePostInput!): CompletePostOutput!
@@ -282,7 +241,6 @@ type Mutation {
   handleApplication(args: HandleApplicationInput!): HandleApplicationOutput!
   toggleLike(args: ToggleLikeInput!): ToggleLikeOutput!
   createQuestion(args: CreateQuestionInput!): CreateQuestionOuput!
-  deleteQuestion(args: DeleteQuestionInput!): DeleteQuestionOutput!
   answerTheQuestion(args: AnswerTheQuestionInput!): AnswerTheQuestionOutput!
 }
 
@@ -313,19 +271,6 @@ input CreatePostInput {
   recognizedHours: Float!
 }
 
-input EditPostInput {
-  title: String
-  description: String
-  category: postCategory
-  date: DateTime
-  rigion: postRigion
-  adress: String
-  host: String
-  NumOfRecruitment: Float
-  recognizedHours: Float
-  postId: Float!
-}
-
 input ToggleOpenAndCloseInput {
   postId: Float!
 }
@@ -354,10 +299,6 @@ input ToggleLikeInput {
 input CreateQuestionInput {
   postId: Float!
   text: String!
-}
-
-input DeleteQuestionInput {
-  questionId: Float!
 }
 
 input AnswerTheQuestionInput {

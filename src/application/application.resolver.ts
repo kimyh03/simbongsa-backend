@@ -1,17 +1,15 @@
-import { UseGuards } from '@nestjs/common';
 import {
-  Args,
-  Mutation,
-  Query,
-  registerEnumType,
-  Resolver,
-} from '@nestjs/graphql';
+  NotFoundException,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import { Args, Mutation, registerEnumType, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
 import { ApplicationService } from './application.service';
 import { applicationStatus } from './dto/ApplicationStatus.enum';
-import { GetMyApplicationsOutput } from './dto/GetMyApplications.dto';
 import {
   HandleApplicationInput,
   HandleApplicationOutput,
@@ -22,7 +20,10 @@ registerEnumType(applicationStatus, { name: 'applicationStatus' });
 
 @Resolver()
 export class ApplicationResolver {
-  constructor(private readonly applicationService: ApplicationService) {}
+  constructor(
+    private readonly applicationService: ApplicationService,
+    private readonly postService: PostService,
+  ) {}
 
   @UseGuards(LogInOnly)
   @Mutation(() => ToggleApplyOutput)
@@ -32,23 +33,19 @@ export class ApplicationResolver {
   ): Promise<ToggleApplyOutput> {
     try {
       const { postId } = args;
-      const {
-        application: exist,
-        error,
-      } = await this.applicationService.findOneByIds(currentUser.id, postId);
-      if (error) throw new Error(error);
-      if (exist) {
-        const { error: DError } = await this.applicationService.deleteByIds(
-          currentUser.id,
-          postId,
-        );
-        if (DError) throw new Error(DError);
+      const existApplication = await this.applicationService.findOneByIds(
+        currentUser.id,
+        postId,
+      );
+      if (existApplication) {
+        await this.applicationService.delete(existApplication);
       } else {
-        const { error: CError } = await this.applicationService.create(
-          currentUser.id,
-          postId,
-        );
-        if (CError) throw new Error(CError);
+        const post = await this.postService.findOneById(postId);
+        if (!post) throw new NotFoundException();
+        if (post.isCompleted === true || post.isOpened === false) {
+          throw new Error('모집이 마감 되었습니다.');
+        }
+        await this.applicationService.create(currentUser, post);
       }
       return {
         ok: true,
@@ -70,51 +67,24 @@ export class ApplicationResolver {
   ): Promise<HandleApplicationOutput> {
     try {
       const { status, applicationId } = args;
+      const application = await this.applicationService.findOneById(
+        applicationId,
+      );
+      if (!application) throw new NotFoundException();
+      const post = await this.postService.findOneById(application.postId);
+      if (!post) throw new NotFoundException();
+      if (post.userId !== currentUser.id) throw new UnauthorizedException();
       if (status === applicationStatus.rejected) {
-        const { error } = await this.applicationService.deleteById(
-          applicationId,
-        );
-        if (error) throw new Error(error.message);
+        await this.applicationService.delete(application);
       } else {
-        const { error } = await this.applicationService.setStatus(
-          status,
-          applicationId,
-          currentUser.id,
-        );
-        if (error) throw new Error(error.message);
+        await this.applicationService.setStatus(status, application);
       }
-
       return {
         ok: true,
         error: null,
       };
     } catch (error) {
       return {
-        ok: false,
-        error: error.message,
-      };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Query(() => GetMyApplicationsOutput)
-  async getMyApplications(
-    @CurrentUser() currentUser: User,
-  ): Promise<GetMyApplicationsOutput> {
-    try {
-      const {
-        applications,
-        error,
-      } = await this.applicationService.findAllByUserId(currentUser.id);
-      if (error) throw new Error(error.message);
-      return {
-        applications,
-        ok: true,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        applications: null,
         ok: false,
         error: error.message,
       };

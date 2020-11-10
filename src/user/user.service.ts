@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Repository } from 'typeorm';
@@ -17,84 +17,53 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async findOneById(userId: number, relations?: string[]) {
-    try {
-      if (relations) {
-        const user = await this.userRepository.findOne({
-          where: { id: userId },
-          relations: [...relations],
-        });
-        if (!user) throw new NotFoundException();
-        return { user, error: null };
-      } else {
-        const user = await this.userRepository.findOne(userId);
-        if (!user) throw new NotFoundException();
-        return { user, error: null };
-      }
-    } catch (error) {
-      return { user: null, error: error.message };
+  async findOneById(id: number, relations?: string[]) {
+    if (relations) {
+      return await this.userRepository.findOne({
+        where: { id },
+        relations: [...relations],
+      });
+    } else {
+      return await this.userRepository.findOne(id);
     }
   }
 
   async createUser({ username, email, password }: SignUpInput) {
-    try {
-      const existUser = await this.userRepository.findOne({
-        where: [{ email }, { username }],
-      });
-      if (existUser) {
-        return {
-          error: '이미 등록된 정보 입니다.',
-        };
-      }
-      const hashedPassword = await bcrypt.hash(
-        password,
-        +this.configService.get('HASH_ROUNDS'),
-      );
-      const newUser = this.userRepository.create({
-        username,
-        email,
-        password: hashedPassword,
-      });
-      await this.userRepository.save(newUser);
-      const token = this.authService.sign(newUser.id);
-      return {
-        error: null,
-        token,
-      };
-    } catch (error) {
-      return {
-        error: error.message,
-      };
-    }
+    const hashedPassword = await bcrypt.hash(
+      password,
+      +this.configService.get('HASH_ROUNDS'),
+    );
+    const newUser = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    await this.userRepository.save(newUser);
+    return this.authService.sign(newUser.id);
   }
 
   async verifyUser({ email, password }: SignInInput) {
-    try {
-      const user = await this.userRepository.findOne({ email });
-      if (!user)
-        return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+    const user = await this.userRepository.findOne({ email });
+    if (!user) {
+      throw new Error('가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.');
+    } else {
       const compared = await bcrypt.compare(password, user.password);
       if (compared) {
-        const token = this.authService.sign(user.id);
-        return { token, error: null };
+        return this.authService.sign(user.id);
       } else {
-        return { error: '가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.' };
+        throw new Error('가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.');
       }
-    } catch (error) {
-      return {
-        error: error.message,
-      };
     }
   }
 
-  async editAvatar(userId: number, avatarUrl: string) {
-    try {
-      const user = await this.userRepository.findOne(userId);
-      user.avatar = avatarUrl;
-      await this.userRepository.save(user);
-      return { error: null };
-    } catch (error) {
-      return { error: error.message };
-    }
+  async editAvatar(user: User, avatarUrl: string) {
+    user.avatar = avatarUrl;
+    await this.userRepository.save(user);
+  }
+
+  async findOneByInfomation(email: string, username: string) {
+    return await this.userRepository.findOne({
+      where: [{ email }, { username }],
+    });
   }
 }

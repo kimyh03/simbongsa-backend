@@ -1,15 +1,18 @@
-import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/currentUser.decorator';
 import { LogInOnly } from 'src/auth/logInOnly.guard';
+import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
-import { GetMyLikesOutput } from './dto/GetMyLikes.dot';
 import { ToggleLikeInput, ToggleLikeOutput } from './dto/ToggleLike.dto';
 import { LikeService } from './like.service';
 
 @Resolver()
 export class LikeResolver {
-  constructor(private readonly likeService: LikeService) {}
+  constructor(
+    private readonly likeService: LikeService,
+    private readonly postService: PostService,
+  ) {}
 
   @UseGuards(LogInOnly)
   @Mutation(() => ToggleLikeOutput)
@@ -19,11 +22,17 @@ export class LikeResolver {
   ): Promise<ToggleLikeOutput> {
     try {
       const { postId } = args;
-      const { error } = await this.likeService.toggleLike(
+      const existLike = await this.likeService.findOneByIds(
         postId,
         currentUser.id,
       );
-      if (error) throw new Error(error.message);
+      if (existLike) {
+        await this.likeService.remove(existLike);
+      } else {
+        const post = await this.postService.findOneById(postId);
+        if (!post) throw new NotFoundException();
+        await this.likeService.create(currentUser, post);
+      }
       return {
         ok: true,
         error: null,
@@ -32,30 +41,6 @@ export class LikeResolver {
       return {
         ok: false,
         error: error.message,
-      };
-    }
-  }
-
-  @UseGuards(LogInOnly)
-  @Query(() => GetMyLikesOutput)
-  async getMyLikes(
-    @CurrentUser() currentUser: User,
-  ): Promise<GetMyLikesOutput> {
-    try {
-      const { likes, error } = await this.likeService.findAllByUserId(
-        currentUser.id,
-      );
-      if (error) throw new Error(error.message);
-      return {
-        ok: true,
-        error: null,
-        likes,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: error.message,
-        likes: null,
       };
     }
   }
