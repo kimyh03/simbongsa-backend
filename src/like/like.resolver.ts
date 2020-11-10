@@ -34,10 +34,7 @@ export class LikeResolver {
         await notFound(post);
         await this.likeService.create(currentUser, post);
       }
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,

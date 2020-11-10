@@ -87,7 +87,6 @@ export class UserResolver {
         );
         return {
           ok: true,
-          error: null,
           user,
           isSelf,
           likes,
@@ -96,7 +95,6 @@ export class UserResolver {
       } else {
         return {
           ok: true,
-          error: null,
           user,
           isSelf,
         };
@@ -119,7 +117,6 @@ export class UserResolver {
       await notFound(user);
       return {
         ok: true,
-        error: null,
         user,
       };
     } catch (error) {
@@ -143,10 +140,7 @@ export class UserResolver {
     await notFound(user);
     await this.userService.editAvatar(user, avatarUrl);
     try {
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,

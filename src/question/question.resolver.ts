@@ -29,10 +29,7 @@ export class QuestionResolver {
       const post = await this.postService.findOneById(postId);
       await notFound(post);
       await this.questionService.create(text, post, currentUser);
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,

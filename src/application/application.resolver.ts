@@ -45,10 +45,7 @@ export class ApplicationResolver {
         }
         await this.applicationService.create(currentUser, post);
       }
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,
@@ -77,10 +74,7 @@ export class ApplicationResolver {
       } else {
         await this.applicationService.setStatus(status, application);
       }
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,

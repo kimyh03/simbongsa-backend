@@ -41,7 +41,7 @@ export class PostResolver {
   ): Promise<CreatePostOutput> {
     try {
       await this.postService.createPost(currentUser, args);
-      return { ok: true, error: null };
+      return { ok: true };
     } catch (error) {
       return { ok: false, error: error.message };
     }
@@ -118,10 +118,7 @@ export class PostResolver {
       await notFound(post);
       await notMatch(post.userId, currentUser.id);
       await this.postService.delete(post);
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,
@@ -140,7 +137,6 @@ export class PostResolver {
       } = await this.postService.findByFilter(args);
       return {
         ok: true,
-        error: null,
         posts,
         totalCount,
         totalPage,
@@ -167,10 +163,7 @@ export class PostResolver {
       await this.postService.setIsCompleteTrue(post);
       await this.certificates.create(post, post.applications);
       await this.applicatoins.deleteAll(post.applications);
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,

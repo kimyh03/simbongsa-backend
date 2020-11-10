@@ -38,10 +38,7 @@ export class AnswerResolver {
       );
       await isExist(existAnswer);
       await this.answerService.create(question, text);
-      return {
-        ok: true,
-        error: null,
-      };
+      return { ok: true };
     } catch (error) {
       return {
         ok: false,
