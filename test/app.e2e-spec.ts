@@ -683,6 +683,41 @@ describe('AppResolver (e2e)', () => {
   it.todo('toggleApply');
   it.todo('handleApplication');
 
+  describe('toggleApply', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne(1);
+    });
+    it('should toggle apply', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{toggleApply(args:{postId:${post.id}}){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                toggleApply: { ok, error },
+              },
+            },
+          } = res;
+          console.log(error);
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it.todo('should fail when the post is closed');
+    it.todo('should fail without jwt');
+    it.todo('should fail with notFound postId');
+  });
   describe('completePost', () => {
     let post: Post;
     beforeAll(async () => {
