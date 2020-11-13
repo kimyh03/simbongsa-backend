@@ -29,7 +29,11 @@ import { S3Module } from './S3/S3.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'dev? ' ? '.env.dev' : '.env.test',
       validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('dev', 'test')
+          .required(),
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.string().required(),
         DATABASE_USERNAME: Joi.string().required(),
@@ -48,7 +52,7 @@ import { S3Module } from './S3/S3.module';
       database: process.env.DATABASE_NAME,
       entities: [User, Post, Application, Like, Question, Answer, Certificate],
       synchronize: true,
-      logging: true,
+      logging: process.env.NODE_ENV === 'test? ' ? false : true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
