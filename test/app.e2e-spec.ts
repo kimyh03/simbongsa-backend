@@ -32,6 +32,7 @@ describe('AppResolver (e2e)', () => {
     date: '2020.11.11',
   };
   let jwt: string;
+  let fakeJwt: string;
   let userRepository: Repository<User>;
   let postRepository: Repository<Post>;
   let questionRepository: Repository<Question>;
@@ -53,6 +54,29 @@ describe('AppResolver (e2e)', () => {
     app.close();
   });
   describe('signUp', () => {
+    it('fake user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{
+            signUp(args:{
+              username:"fake",
+              email:"fake@fake.com",
+              password:"fake",
+            }){
+              ok
+              error
+              token
+            }
+          }
+        `,
+        })
+        .expect(200)
+        .expect(res => {
+          fakeJwt = res.body.data.signUp.token;
+        });
+    });
     it('should create account', () => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
@@ -717,8 +741,60 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
-    it.todo('should fail without jwt of question.post.user');
-    it.todo('should fail with notFound questionId');
+    it('should fail with notFound questionId', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            answerTheQuestion(args:{questionId:666, text:"test"}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                answerTheQuestion: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+    it('should fail without jwt of question.post.user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${fakeJwt}` })
+        .send({
+          query: `
+          mutation{
+            answerTheQuestion(args:{questionId:${question.id}, text:"test"}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                answerTheQuestion: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
   });
   describe('toggleApply', () => {
     let post: Post;
@@ -746,7 +822,6 @@ describe('AppResolver (e2e)', () => {
               },
             },
           } = res;
-          console.log(error);
           expect(ok).toBe(true);
           expect(error).toBe(null);
         });
