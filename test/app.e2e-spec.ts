@@ -1155,10 +1155,62 @@ describe('AppResolver (e2e)', () => {
             },
           } = res;
           expect(ok).toBe(true);
-          expect(error).toEqual(null);
+          expect(error).toBe(null);
         });
     });
-    it.todo('should fail with notFound postId');
-    it.todo('should fail without jwt of post.user');
+    it('should fail with notFound postId', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            deletePost(args:{postId:666}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                deletePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+    it('should fail without jwt of post.user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${fakeJwt}` })
+        .send({
+          query: `
+          mutation{
+            deletePost(args:{postId:${post.id}}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                deletePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
   });
 });
