@@ -5,6 +5,8 @@ import { getConnection, Repository } from 'typeorm';
 import * as request from 'supertest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
+import { postCategoryEnum } from 'src/post/dto/postCategory.enum';
+import { postRigionEnum } from 'src/post/dto/postRigion.enum';
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
@@ -13,6 +15,17 @@ describe('AppResolver (e2e)', () => {
     username: 'Hoony',
     email: 'Hoony@hoony.com',
     password: '123',
+  };
+  const testPost = {
+    title: 'test',
+    description: 'test',
+    category: postCategoryEnum.communityService,
+    rigion: postRigionEnum.Seoul,
+    adress: 'test',
+    host: 'test',
+    NumOfRecruitment: 1,
+    recognizedHours: 1,
+    date: '2020.11.11',
   };
   let jwt: string;
   let userRepository: Repository<User>;
@@ -224,7 +237,6 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-
   describe('getProfile', () => {
     let user: User;
     beforeAll(async () => {
@@ -338,7 +350,73 @@ describe('AppResolver (e2e)', () => {
   it.todo('editAvatar');
 
   //Post
-  it.todo('createPost');
+  describe('createPost', () => {
+    it('should create post', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+            mutation{
+              createPost(args:{
+                title: "${testPost.title}",
+                description: "${testPost.description}",
+                category: ${testPost.category},
+                rigion: ${testPost.rigion},
+                adress: "${testPost.adress}",
+                host: "${testPost.host}",
+                NumOfRecruitment: ${testPost.NumOfRecruitment},
+                recognizedHours: ${testPost.recognizedHours},
+                date: "${testPost.date}"
+              }){
+                ok
+                error
+              }
+            }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                createPost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it('should fail without jwt', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+            mutation{
+              createPost(args:{
+                title: "${testPost.title}",
+                description: "${testPost.description}",
+                category: ${testPost.category},
+                rigion: ${testPost.rigion},
+                adress: "${testPost.adress}",
+                host: "${testPost.host}",
+                NumOfRecruitment: ${testPost.NumOfRecruitment},
+                recognizedHours: ${testPost.recognizedHours},
+                date: "${testPost.date}"
+              }){
+                ok
+                error
+              }
+            }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          expect(res.body.errors[0].message).toBe('Forbidden resource');
+        });
+    });
+  });
   it.todo('getPostDetail');
   it.todo('toggleOpenAndClose');
   it.todo('deletePost');
