@@ -826,9 +826,47 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
-    it.todo('should fail when the post is closed');
-    it.todo('should fail without jwt');
-    it.todo('should fail with notFound postId');
+    it('should fail with notFound postId', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{toggleApply(args:{postId:666}){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                toggleApply: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+    it('should fail without jwt', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{toggleApply(args:{postId:${post.id}}){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          expect(res.body.errors[0].message).toBe('Forbidden resource');
+        });
+    });
   });
   describe('handleApplication', () => {
     let application: Application;
