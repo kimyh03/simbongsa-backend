@@ -215,11 +215,11 @@ input GetPostDetailInput {
 }
 
 input GetPostsInput {
-  categories: [postCategory!]
-  rigions: [postRigion!]
+  categories: [postCategory!]!
+  rigions: [postRigion!]!
   page: Float!
-  openOnly: Boolean
-  searchTerm: String
+  openOnly: Boolean!
+  searchTerm: String!
 }
 
 type Mutation {

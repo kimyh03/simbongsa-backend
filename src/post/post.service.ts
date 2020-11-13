@@ -42,7 +42,7 @@ export class PostService {
     categories,
     rigions,
     openOnly,
-    page = 1,
+    page,
     searchTerm,
   }: GetPostsInput) {
     const LIMIT = 10;

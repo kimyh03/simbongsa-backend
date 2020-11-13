@@ -6,20 +6,20 @@ import { postRigionEnum } from './postRigion.enum';
 
 @InputType()
 export class GetPostsInput {
-  @Field(() => [postCategoryEnum], { nullable: true })
-  categories?: postCategoryEnum[];
+  @Field(() => [postCategoryEnum])
+  categories: postCategoryEnum[];
 
-  @Field(() => [postRigionEnum], { nullable: true })
-  rigions?: postRigionEnum[];
+  @Field(() => [postRigionEnum])
+  rigions: postRigionEnum[];
 
   @Field()
   page: number;
 
-  @Field({ nullable: true })
-  openOnly?: boolean;
+  @Field()
+  openOnly: boolean;
 
-  @Field({ nullable: true })
-  searchTerm?: string;
+  @Field()
+  searchTerm: string;
 }
 
 @ObjectType()
