@@ -576,7 +576,6 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('completePost');
 
   //Like
   it.todo('toggleLike');
@@ -590,6 +589,40 @@ describe('AppResolver (e2e)', () => {
   //Application
   it.todo('toggleApply');
   it.todo('handleApplication');
+
+  describe('completePost', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should complete post', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{completePost(args:{
+            postId:${post.id}
+          }){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                completePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+  });
 
   describe('deletePost', () => {
     let post: Post;
