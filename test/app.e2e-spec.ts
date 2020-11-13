@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from './../src/app.module';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import * as request from 'supertest';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from 'src/user/user.entity';
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
@@ -12,13 +14,15 @@ describe('AppResolver (e2e)', () => {
     email: 'Hoony@hoony.com',
     password: '123',
   };
-
+  let jwt: string;
+  let userRepository: Repository<User>;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
     app = module.createNestApplication();
     await app.init();
+    userRepository = module.get(getRepositoryToken(User));
   });
 
   afterAll(async () => {
@@ -151,6 +155,8 @@ describe('AppResolver (e2e)', () => {
               },
             },
           } = res;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          jwt = token;
           expect(ok).toBe(true);
           expect(error).toBe(null);
           expect(token).toEqual(expect.any(String));
@@ -218,7 +224,117 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('getProfile');
+
+  describe('getProfile', () => {
+    let user: User;
+    beforeAll(async () => {
+      user = await userRepository.findOne({
+        email: testUser.email,
+      });
+    });
+    it('should get my profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `{
+            getProfile(args:{userId:${user.id}}){
+              ok
+              error
+              isSelf
+              user{
+                id
+              }
+              likes{
+                id
+              }
+              applications{
+                id
+              }
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                getProfile: { ok, error, isSelf, user, likes, applications },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(isSelf).toBe(true);
+          expect(user).toEqual(expect.any(Object));
+          expect(likes).toEqual(expect.any(Array));
+          expect(applications).toEqual(expect.any(Array));
+        });
+    });
+    it('should get others profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `{
+            getProfile(args:{userId:${user.id}}){
+              ok
+              error
+              isSelf
+              user{
+                id
+              }
+              likes{
+                id
+              }
+              applications{
+                id
+              }
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                getProfile: { ok, error, isSelf, user, likes, applications },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(isSelf).toBe(false);
+          expect(user).toEqual(expect.any(Object));
+          expect(likes).toBe(null);
+          expect(applications).toBe(null);
+        });
+    });
+    it('should fail with notFound id', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `{
+            getProfile(args:{userId:666}){
+              ok
+              error
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                getProfile: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+  });
+
   it.todo('editAvatar');
 
   //Post

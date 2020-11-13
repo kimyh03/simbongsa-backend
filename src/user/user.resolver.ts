@@ -77,7 +77,7 @@ export class UserResolver {
       }
       user.activityTime = container;
       user.activityCount = user.certificates?.length;
-      const isSelf = currentUser.id === userId;
+      const isSelf = currentUser?.id === userId;
       if (isSelf) {
         const likes = await this.likeService.findAllByUserId(currentUser.id, [
           'post',
