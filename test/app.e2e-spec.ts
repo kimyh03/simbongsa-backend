@@ -501,7 +501,39 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('toggleOpenAndClose');
+  describe('toggleOpenAndClose', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should toggle', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            toggleOpenAndClose(args:{postId:${post.id}}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                toggleOpenAndClose: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+  });
   it.todo('deletePost');
   it.todo('getPosts');
   it.todo('completePost');
