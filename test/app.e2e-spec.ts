@@ -578,7 +578,36 @@ describe('AppResolver (e2e)', () => {
   });
 
   //Like
-  it.todo('toggleLike');
+  describe('toggleLike', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should toggle like', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{toggleLike(args:{postId:${post.id}}){
+            ok
+            error
+          }}`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                toggleLike: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+  });
 
   //Question
   it.todo('createQuestion');
