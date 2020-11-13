@@ -115,12 +115,6 @@ type EditAvatarOutput {
   error: String
 }
 
-type GetMeOutput {
-  ok: Boolean!
-  error: String
-  user: User
-}
-
 type GetProfileOutput {
   ok: Boolean!
   error: String
@@ -208,7 +202,6 @@ type AnswerTheQuestionOutput {
 
 type Query {
   getProfile(args: getProfileInput!): GetProfileOutput!
-  getMe: GetMeOutput!
   getPostDetail(args: GetPostDetailInput!): GetPostDetailOutput!
   getPosts(args: GetPostsInput!): GetPostsOutput!
 }
