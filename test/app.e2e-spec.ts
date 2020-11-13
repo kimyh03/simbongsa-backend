@@ -124,7 +124,100 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('signIn');
+  describe('signIn', () => {
+    it('should log in', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{
+            signIn(args:{
+              email:"${testUser.email}",
+              password:"${testUser.password}"
+            }){
+              ok
+              error
+              token
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signIn: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(token).toEqual(expect.any(String));
+        });
+    });
+    it('should fail with wrong email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{
+            signIn(args:{
+              email:"test",
+              password:"${testUser.password}",
+            }){
+              ok
+              error
+              token
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signIn: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+          expect(token).toBe(null);
+        });
+    });
+    it('should fail with wrong password', () => {
+      request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{
+            signIn(args:{
+              email:"${testUser.email}",
+              password:"test"
+            }){
+              ok
+              error
+              token
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signIn: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+          expect(token).toBe(null);
+        });
+    });
+  });
   it.todo('getProfile');
   it.todo('editAvatar');
 
