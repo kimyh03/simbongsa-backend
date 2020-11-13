@@ -899,8 +899,58 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
-    it.todo('should fail with notFound applicationId');
-    it.todo('should fail without jwt of application.post.user');
+    it('should fail with notFound applicationId', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            handleApplication(args:{applicationId:666, status:"${applicationStatus.accepted}"}){
+              ok
+              error
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                handleApplication: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+    it('should fail without jwt of application.post.user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${fakeJwt}` })
+        .send({
+          query: `
+          mutation{
+            handleApplication(args:{applicationId:${application.id}, status:"${applicationStatus.accepted}"}){
+              ok
+              error
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                handleApplication: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
   });
   describe('toggleOpenAndClose', () => {
     let post: Post;
