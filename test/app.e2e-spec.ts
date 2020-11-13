@@ -640,6 +640,40 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
+  describe('answerTheQuestion', () => {
+    let question: Question;
+    beforeAll(async () => {
+      question = await questionRepository.findOne(1);
+    });
+    it('should create answer', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            answerTheQuestion(args:{questionId:${question.id}, text:"test"}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                answerTheQuestion: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it.todo('should fail without jwt of question.post.user');
+    it.todo('should fail with notFound questionId');
   });
 
   //Answer
