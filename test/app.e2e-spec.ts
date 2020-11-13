@@ -534,7 +534,39 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('deletePost');
+  describe('deletePost', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should delete post', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            deletePost(args:{postId:${post.id}}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                deletePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toEqual(null);
+        });
+    });
+  });
   it.todo('getPosts');
   it.todo('completePost');
 
