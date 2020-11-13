@@ -7,6 +7,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { postCategoryEnum } from 'src/post/dto/postCategory.enum';
 import { postRigionEnum } from 'src/post/dto/postRigion.enum';
+import { Post } from 'src/post/post.entity';
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
@@ -29,6 +30,7 @@ describe('AppResolver (e2e)', () => {
   };
   let jwt: string;
   let userRepository: Repository<User>;
+  let postRepository: Repository<Post>;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -36,6 +38,7 @@ describe('AppResolver (e2e)', () => {
     app = module.createNestApplication();
     await app.init();
     userRepository = module.get(getRepositoryToken(User));
+    postRepository = module.get(getRepositoryToken(Post));
   });
 
   afterAll(async () => {
@@ -417,7 +420,87 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  it.todo('getPostDetail');
+  describe('getPostDetail', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should get post detail', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `{
+            getPostDetail(args:{postId:${post.id}}){
+              ok
+              error
+              post{
+                id
+              }
+              isMine
+              isLiked
+              isApplied
+              questions{
+                id
+              }
+              applications{
+                id
+              }
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                getPostDetail: {
+                  ok,
+                  error,
+                  post,
+                  isMine,
+                  isLiked,
+                  isApplied,
+                  questions,
+                  applications,
+                },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(post).toEqual(expect.any(Object));
+          expect(isMine).toBe(false);
+          expect(isLiked).toBe(false);
+          expect(isApplied).toBe(false);
+          expect(questions).toEqual(expect.any(Object));
+          expect(applications).toEqual(expect.any(Object));
+        });
+    });
+    it('should fail with notFound id', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `{
+          getPostDetail(args:{postId:666}){
+            ok
+            error
+          }
+        }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                getPostDetail: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+  });
   it.todo('toggleOpenAndClose');
   it.todo('deletePost');
   it.todo('getPosts');
