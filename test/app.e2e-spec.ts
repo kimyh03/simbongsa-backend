@@ -718,6 +718,40 @@ describe('AppResolver (e2e)', () => {
     it.todo('should fail without jwt');
     it.todo('should fail with notFound postId');
   });
+  describe('handleApplication', () => {
+    let application: Application;
+    beforeAll(async () => {
+      application = await applicationRepository.findOne(1);
+    });
+    it('should set application status', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            handleApplication(args:{applicationId:${application.id}, status:"${applicationStatus.accepted}"}){
+              ok
+              error
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                handleApplication: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it.todo('should fail with notFound applicationId');
+    it.todo('should fail without jwt of application.post.user');
+  });
   describe('completePost', () => {
     let post: Post;
     beforeAll(async () => {
