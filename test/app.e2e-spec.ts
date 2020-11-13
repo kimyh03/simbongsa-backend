@@ -1071,8 +1071,60 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
-    it.todo('should fail with notFound postId');
-    it.todo('should fail without jwt of post.user');
+    it('should fail with notFound postId', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{completePost(args:{
+            postId:666
+          }){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                completePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
+    it('should fail without jwt of post.user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${fakeJwt}` })
+        .send({
+          query: `
+          mutation{completePost(args:{
+            postId:${post.id}
+          }){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                completePost: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+        });
+    });
   });
   describe('deletePost', () => {
     let post: Post;
