@@ -610,7 +610,37 @@ describe('AppResolver (e2e)', () => {
   });
 
   //Question
-  it.todo('createQuestion');
+  describe('createQuestion', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should create qeustion', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{createQuestion(args:{postId:${post.id}, text:"test"}){
+            ok
+            error
+          }}
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                createQuestion: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+  });
 
   //Answer
   it.todo('answerTheQuestion');
