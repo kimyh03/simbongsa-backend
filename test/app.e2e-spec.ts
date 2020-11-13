@@ -502,39 +502,6 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-  describe('toggleOpenAndClose', () => {
-    let post: Post;
-    beforeAll(async () => {
-      post = await postRepository.findOne({ where: { title: testPost.title } });
-    });
-    it('should toggle', () => {
-      return request(app.getHttpServer())
-        .post(GRAPHQL_ENDPOINT)
-        .set({ Authorization: `Bearer ${jwt}` })
-        .send({
-          query: `
-          mutation{
-            toggleOpenAndClose(args:{postId:${post.id}}){
-              ok
-              error
-            }
-          }
-          `,
-        })
-        .expect(200)
-        .expect(res => {
-          const {
-            body: {
-              data: {
-                toggleOpenAndClose: { ok, error },
-              },
-            },
-          } = res;
-          expect(ok).toBe(true);
-          expect(error).toBe(null);
-        });
-    });
-  });
   describe('getPosts', () => {
     it('should get posts', () => {
       return request(app.getHttpServer())
@@ -751,6 +718,41 @@ describe('AppResolver (e2e)', () => {
     });
     it.todo('should fail with notFound applicationId');
     it.todo('should fail without jwt of application.post.user');
+  });
+  describe('toggleOpenAndClose', () => {
+    let post: Post;
+    beforeAll(async () => {
+      post = await postRepository.findOne({ where: { title: testPost.title } });
+    });
+    it('should toggle', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set({ Authorization: `Bearer ${jwt}` })
+        .send({
+          query: `
+          mutation{
+            toggleOpenAndClose(args:{postId:${post.id}}){
+              ok
+              error
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                toggleOpenAndClose: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it.todo('should fail with notFound postId');
+    it.todo('should fail without jwt of post.user');
   });
   describe('completePost', () => {
     let post: Post;
