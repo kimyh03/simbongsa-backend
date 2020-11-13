@@ -1,24 +1,47 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { getConnection } from 'typeorm';
 
-describe('AppController (e2e)', () => {
+describe('AppResolver (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await getConnection().dropDatabase();
+    app.close();
   });
+  //User
+  it.todo('signUp');
+  it.todo('signIn');
+  it.todo('getProfile');
+  it.todo('editAvatar');
+
+  //Post
+  it.todo('createPost');
+  it.todo('getPostDetail');
+  it.todo('toggleOpenAndClose');
+  it.todo('deletePost');
+  it.todo('getPosts');
+  it.todo('completePost');
+
+  //Like
+  it.todo('toggleLike');
+
+  //Question
+  it.todo('createQuestion');
+
+  //Answer
+  it.todo('answerTheQuestion');
+
+  //Application
+  it.todo('toggleApply');
+  it.todo('handleApplication');
 });
