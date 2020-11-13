@@ -8,6 +8,9 @@ import { User } from 'src/user/user.entity';
 import { postCategoryEnum } from 'src/post/dto/postCategory.enum';
 import { postRigionEnum } from 'src/post/dto/postRigion.enum';
 import { Post } from 'src/post/post.entity';
+import { Question } from 'src/question/question.entity';
+import { Application } from 'src/application/application.entity';
+import { applicationStatus } from 'src/application/dto/ApplicationStatus.enum';
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
@@ -31,6 +34,8 @@ describe('AppResolver (e2e)', () => {
   let jwt: string;
   let userRepository: Repository<User>;
   let postRepository: Repository<Post>;
+  let questionRepository: Repository<Question>;
+  let applicationRepository: Repository<Application>;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -39,14 +44,14 @@ describe('AppResolver (e2e)', () => {
     await app.init();
     userRepository = module.get(getRepositoryToken(User));
     postRepository = module.get(getRepositoryToken(Post));
+    questionRepository = module.get(getRepositoryToken(Question));
+    applicationRepository = module.get(getRepositoryToken(Application));
   });
 
   afterAll(async () => {
     await getConnection().dropDatabase();
     app.close();
   });
-
-  //User
   describe('signUp', () => {
     it('should create account', () => {
       return request(app.getHttpServer())
@@ -324,7 +329,7 @@ describe('AppResolver (e2e)', () => {
           expect(applications).toBe(null);
         });
     });
-    it('should fail with notFound id', () => {
+    it('should fail with notFound userId', () => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
         .send({
@@ -349,10 +354,6 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-
-  it.todo('editAvatar');
-
-  //Post
   describe('createPost', () => {
     it('should create post', () => {
       return request(app.getHttpServer())
@@ -477,7 +478,7 @@ describe('AppResolver (e2e)', () => {
           expect(applications).toEqual(expect.any(Object));
         });
     });
-    it('should fail with notFound id', () => {
+    it('should fail with notFound postId', () => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
         .send({
@@ -543,8 +544,6 @@ describe('AppResolver (e2e)', () => {
         });
     });
   });
-
-  //Like
   describe('toggleLike', () => {
     let post: Post;
     beforeAll(async () => {
@@ -574,9 +573,9 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
+    it.todo('should fail without jwt');
+    it.todo('should fail with notFound postId');
   });
-
-  //Question
   describe('createQuestion', () => {
     let post: Post;
     beforeAll(async () => {
@@ -607,6 +606,9 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
+    it.todo('should fail without jwt');
+    it.todo('should fail with notFound postId');
+  });
   describe('answerTheQuestion', () => {
     let question: Question;
     beforeAll(async () => {
@@ -642,14 +644,6 @@ describe('AppResolver (e2e)', () => {
     it.todo('should fail without jwt of question.post.user');
     it.todo('should fail with notFound questionId');
   });
-
-  //Answer
-  it.todo('answerTheQuestion');
-
-  //Application
-  it.todo('toggleApply');
-  it.todo('handleApplication');
-
   describe('toggleApply', () => {
     let post: Post;
     beforeAll(async () => {
@@ -786,8 +780,9 @@ describe('AppResolver (e2e)', () => {
           expect(error).toBe(null);
         });
     });
+    it.todo('should fail with notFound postId');
+    it.todo('should fail without jwt of post.user');
   });
-
   describe('deletePost', () => {
     let post: Post;
     beforeAll(async () => {
@@ -820,5 +815,7 @@ describe('AppResolver (e2e)', () => {
           expect(error).toEqual(null);
         });
     });
+    it.todo('should fail with notFound postId');
+    it.todo('should fail without jwt of post.user');
   });
 });
