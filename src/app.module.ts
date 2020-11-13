@@ -52,7 +52,7 @@ import { S3Module } from './S3/S3.module';
       database: process.env.DATABASE_NAME,
       entities: [User, Post, Application, Like, Question, Answer, Certificate],
       synchronize: true,
-      logging: process.env.NODE_ENV === 'test? ' ? false : true,
+      logging: process.env.NODE_ENV === 'test' ? false : true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',

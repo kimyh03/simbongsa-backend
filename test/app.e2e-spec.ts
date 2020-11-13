@@ -2,9 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from './../src/app.module';
 import { getConnection } from 'typeorm';
+import * as request from 'supertest';
 
 describe('AppResolver (e2e)', () => {
   let app: INestApplication;
+  const GRAPHQL_ENDPOINT = '/graphql';
+  const testUser = {
+    username: 'Hoony',
+    email: 'Hoony@hoony.com',
+    password: '123',
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,8 +25,105 @@ describe('AppResolver (e2e)', () => {
     await getConnection().dropDatabase();
     app.close();
   });
+
   //User
-  it.todo('signUp');
+  describe('signUp', () => {
+    it('should create account', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+            mutation{
+              signUp(args:{
+                username:"${testUser.username}",
+                email:"${testUser.email}",
+                password:"${testUser.password}",
+              }){
+                ok
+                error
+                token
+              }
+            }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signUp: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(token).toEqual(expect.any(String));
+        });
+    });
+    it('should fail with exist email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+            mutation{
+              signUp(args:{
+                username:"test",
+                email:"${testUser.email}",
+                password:"test",
+              }){
+                ok
+                error
+                token
+              }
+            }
+          `,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signUp: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+          expect(token).toBe(null);
+        });
+    });
+    it('should fail with exist username', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+          mutation{
+            signUp(args:{
+              username:"${testUser.username}",
+              email:"test",
+              password:"test",
+            }){
+              ok
+              error
+              token
+            }
+          }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const {
+            body: {
+              data: {
+                signUp: { ok, error, token },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toEqual(expect.any(String));
+          expect(token).toBe(null);
+        });
+    });
+  });
   it.todo('signIn');
   it.todo('getProfile');
   it.todo('editAvatar');
