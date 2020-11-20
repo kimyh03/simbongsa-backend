@@ -29,12 +29,7 @@ import { S3Module } from './S3/S3.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
-      ignoreEnvFile: process.env.NODE_ENV === 'prod',
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('dev', 'test', 'prod')
-          .required(),
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.string().required(),
         DATABASE_USERNAME: Joi.string().required(),

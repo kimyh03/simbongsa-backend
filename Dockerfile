@@ -6,4 +6,9 @@ COPY . .
 RUN npm install
 RUN npm run build
 
-CMD ["npm", "run", "start:dev"]
+FROM node:13-alpine
+WORKDIR /app
+
+COPY --from=builder /app ./
+
+CMD ["npm", "run", "start:prod"]
