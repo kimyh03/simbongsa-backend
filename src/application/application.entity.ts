@@ -3,7 +3,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
-import { applicationStatus } from './dto/ApplicationStatus.enum';
+import { applicationStatus } from 'src/application/dto/applicationStatus.enum';
 
 // 봉사활동 모집 공고에 대한 참가 신청
 

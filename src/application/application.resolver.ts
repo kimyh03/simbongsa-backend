@@ -7,7 +7,7 @@ import notMatch from 'src/common/exceptions/notMatch';
 import { PostService } from 'src/post/post.service';
 import { User } from 'src/user/user.entity';
 import { ApplicationService } from './application.service';
-import { applicationStatus } from './dto/ApplicationStatus.enum';
+import { applicationStatus } from 'src/application/dto/applicationStatus.enum';
 import {
   HandleApplicationInput,
   HandleApplicationOutput,

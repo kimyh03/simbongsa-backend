@@ -4,7 +4,7 @@ import { Post } from 'src/post/post.entity';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { Application } from './application.entity';
-import { applicationStatus } from './dto/ApplicationStatus.enum';
+import { applicationStatus } from 'src/application/dto/applicationStatus.enum';
 
 @Injectable()
 export class ApplicationService {

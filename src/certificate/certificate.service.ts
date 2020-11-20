@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from 'src/application/application.entity';
-import { applicationStatus } from 'src/application/dto/ApplicationStatus.enum';
+import { applicationStatus } from 'src/application/dto/applicationStatus.enum';
 import { Post } from 'src/post/post.entity';
 import { Repository } from 'typeorm';
 import { Certificate } from './certificate.entity';
