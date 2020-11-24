@@ -25,11 +25,12 @@ import { AnswerModule } from './answer/answer.module';
 import { CertificateModule } from './certificate/certificate.module';
 import { Certificate } from './certificate/certificate.entity';
 import { S3Module } from './S3/S3.module';
-//test test2
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
       validationSchema: Joi.object({
         DATABASE_HOST: Joi.string().required(),
         DATABASE_PORT: Joi.string().required(),
@@ -38,6 +39,7 @@ import { S3Module } from './S3/S3.module';
         DATABASE_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         HASH_ROUNDS: Joi.string().required(),
+        NODE_ENV: Joi.valid('prod', 'test', 'dev'),
       }),
     }),
     TypeOrmModule.forRoot({
