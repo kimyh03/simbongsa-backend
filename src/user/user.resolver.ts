@@ -7,6 +7,7 @@ import notFound from 'src/common/exceptions/notFound';
 import { LikeService } from 'src/like/like.service';
 import { S3Service } from 'src/S3/S3.service';
 import { EditAvatarInput, EditAvatarOutput } from './dto/EditAvatar.dto';
+import { GetMeOutput } from './dto/GetMe.dto';
 import { getProfileInput, GetProfileOutput } from './dto/GetProfile.dto';
 import { SignInInput, SignInOutput } from './dto/SignIn.dto';
 import { SignUpInput, SignUpOutput } from './dto/SignUp.dto';
@@ -129,6 +130,26 @@ export class UserResolver {
       return {
         ok: false,
         error: error.message,
+      };
+    }
+  }
+
+  @Query(() => GetMeOutput)
+  async getMe(
+    @CurrentUser('currentUser') currentUser: User,
+  ): Promise<GetMeOutput> {
+    try {
+      const user = await this.userService.findOneById(currentUser.id);
+      await notFound(user);
+      return {
+        ok: true,
+        user,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error.message,
+        user: null,
       };
     }
   }
