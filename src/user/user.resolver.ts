@@ -153,9 +153,4 @@ export class UserResolver {
       };
     }
   }
-
-  @Query(() => Boolean)
-  async CICDTest() {
-    return true;
-  }
 }
