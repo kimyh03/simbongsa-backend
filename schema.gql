@@ -209,6 +209,7 @@ type AnswerTheQuestionOutput {
 type Query {
   getProfile(args: getProfileInput!): GetProfileOutput!
   getMe: GetMeOutput!
+  CICDTest: Boolean!
   getPostDetail(args: GetPostDetailInput!): GetPostDetailOutput!
   getPosts(args: GetPostsInput!): GetPostsOutput!
 }
