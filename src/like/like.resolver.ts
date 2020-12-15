@@ -24,8 +24,8 @@ export class LikeResolver {
     try {
       const { postId } = args;
       const existLike = await this.likeService.findOneByIds(
-        postId,
         currentUser.id,
+        postId,
       );
       if (existLike) {
         await this.likeService.remove(existLike);

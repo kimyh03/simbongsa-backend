@@ -72,12 +72,12 @@ export class UserResolver {
         'certificates',
       ]);
       await notFound(user);
+      user.activityCount = user.certificates?.length;
       let container = 0;
       for (let i = 0; i < user.activityCount; i++) {
         container = container + user.certificates[i].recognizedHours;
       }
       user.activityTime = container;
-      user.activityCount = user.certificates?.length;
       const isSelf = currentUser?.id === userId;
       if (isSelf) {
         const likes = await this.likeService.findAllByUserId(currentUser.id, [
